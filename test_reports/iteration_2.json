@@ -1,0 +1,36 @@
+{
+  "summary": "P0 consumer review flow now works end-to-end. Quick demo consumer login persists user state, opening add-review-modal succeeds, rating + comment submits and modal closes, and the reviews list/count updates (from 4 to 5 avaliações). Backend regression 5/5 passing (auth+roles, search/detail/click/favorite, owner metrics+CRUD, admin metrics+RBAC, and new review persistence). UI regression passing: custom login (user@cidadehub.com), favorite toggle, RoleSwitcher (profile-open-role-switcher-btn -> role-option-store-owner) redirects to /owner/dashboard. Inline review-error-box in place; no Alert()/alert() usage in store/[id].tsx.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [],
+    "react_native_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_cidadehub_review.py",
+    "/app/test_reports/pytest/pytest_results.xml",
+    "/app/test_reports/ui/review_modal_open.jpeg",
+    "/app/test_reports/ui/review_after_submit.jpeg",
+    "/app/test_reports/ui/role_switcher.jpeg",
+    "/app/test_reports/ui/owner_dashboard.jpeg"
+  ],
+  "action_items": [
+    "Optional: address React Native web console warning \"shadow* style props are deprecated. Use boxShadow.\" (non-blocking; comes from lucide-react-native or shadow* usages).",
+    "Optional hardening: frontend/.env exposes EXPO_PUBLIC_BACKEND_URL (correct for Expo web) rather than EXPO_BACKEND_URL from the deployment contract; document the naming or add both if needed."
+  ],
+  "critical_code_review_comments": [
+    "Backend still uses fallback defaults for JWT_SECRET/MONGO_URL/DB_NAME; the environment contract prefers failing fast on missing config.",
+    "AuthContext.switchDemoRole reads process.env.EXPO_PUBLIC_BACKEND_URL directly; consider centralizing via a config module to match the api.ts BASE_URL usage."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_cidadehub_review.py",
+    "/app/test_reports/iteration_2.json"
+  ],
+  "success_rate": {"backend": "100% (5/5)", "frontend": "100% (P0 + regression)"},
+  "seed_data_creation": "Added one TEST_ui_review_* review to store_1 and one TEST_ backend review to store_1 for persistence verification.",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Preview: https://city-shop-hub-3.preview.emergentagent.com. Credentials in /app/memory/test_credentials.md. Set EXPO_BACKEND_URL to preview URL before running pytest. The P0 consumer -> add review flow is confirmed working end-to-end via Playwright (mobile 390x844).",
+  "rca_of_issue": "Previous iteration failure was caused by (a) stale/missing user state after switchDemoRole and (b) suppressed errors + hidden alert() usage. Current fix chain works: switchDemoRole now throws on !res.ok, handleQuickDemo awaits it and only navigates on success (else shows auth-error-box), openReviewModal resets state and gates on user, and handleSubmitReview surfaces failures via inline review-error-box. Playwright run at 390x844 confirmed modal visibility, star selection (rating-star-btn-4), comment input, submit, modal close, and updated review count 4->5."
+}

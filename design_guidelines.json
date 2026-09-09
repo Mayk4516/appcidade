@@ -1,0 +1,148 @@
+{
+  "app_name": "UrbanPulse CityHub",
+  "personality": "1 iOS-Native Clean",
+  "personality_one_liner": "A refined, trusted urban marketplace connecting local citizens with verified city stores, direct WhatsApp conversion, and multi-tier SaaS merchant tools.",
+  "color": {
+    "surface": "#F9F8F6",
+    "onSurface": "#1C1C1E",
+    "surfaceSecondary": "#FFFFFF",
+    "onSurfaceSecondary": "#1C1C1E",
+    "surfaceTertiary": "#F0EFEA",
+    "onSurfaceTertiary": "#3A3A3C",
+    "surfaceInverse": "#1C1C1E",
+    "onSurfaceInverse": "#F9F8F6",
+    "brand": "#D97706",
+    "brandPrimary": "#B45309",
+    "onBrandPrimary": "#FFFFFF",
+    "brandSecondary": "#92400E",
+    "onBrandSecondary": "#FFFFFF",
+    "brandTertiary": "#FEF3C7",
+    "onBrandTertiary": "#78350F",
+    "success": "#047857",
+    "onSuccess": "#FFFFFF",
+    "warning": "#B45309",
+    "onWarning": "#FFFFFF",
+    "error": "#B91C1C",
+    "onError": "#FFFFFF",
+    "info": "#1D4ED8",
+    "onInfo": "#FFFFFF",
+    "border": "#E5E5EA",
+    "borderStrong": "#C7C7CC",
+    "divider": "#EFEFF4",
+    "muted": "#68686C",
+    "onBrand": "#FFFFFF"
+  },
+  "typography": {
+    "displayFontFamily": "PlusJakartaSans_500Medium",
+    "textFontFamily": "PlusJakartaSans_400Regular",
+    "scale": {
+      "sm": 12,
+      "base": 14,
+      "lg": 16,
+      "xl": 20,
+      "2xl": 24
+    }
+  },
+  "spacing": {
+    "rule": "Maintain generous iOS-native vertical spacing, comfortable touch targets (>=44pt), and clean horizontal padding.",
+    "xs": 4,
+    "sm": 8,
+    "md": 12,
+    "lg": 16,
+    "xl": 24,
+    "2xl": 32,
+    "3xl": 48
+  },
+  "radius_tokens": {
+    "sm": 6,
+    "md": 12,
+    "lg": 20,
+    "pill": 999
+  },
+  "shadow_tier": "1",
+  "navigation": "bottom_tabs",
+  "icon_set": "Ionicons",
+  "glassmorphism": {
+    "enabled": true,
+    "do's": [
+      "Use frosted glass header and bottom navigation over scrolling content",
+      "Apply translucent tinted glass for featured store highlight cards"
+    ],
+    "dont's": [
+      "Never apply blur to form inputs or body text",
+      "Never stack multiple heavy blur layers"
+    ]
+  },
+  "platform_libraries": {
+    "glass": {
+      "ios": "expo-glass-effect",
+      "android": "expo-blur",
+      "low_end_android_fallback": "solid surfaceSecondary"
+    },
+    "image": "expo-image",
+    "blur": "expo-blur",
+    "bottom_sheet": "@gorhom/bottom-sheet",
+    "animation": "react-native-reanimated",
+    "gesture": "react-native-gesture-handler"
+  },
+  "screens": [
+    {
+      "name": "RoleSwitcher",
+      "purpose": "Seamless profile switcher between Consumidor, Lojista (Painel da Loja), and Super Admin with demo accounts.",
+      "states": {
+        "loading": "Centered minimalist spinner with warm amber brand accent",
+        "empty": "No demo accounts available",
+        "error": "Failed to authenticate session. Please retry."
+      },
+      "layout": "Centered immersive card stack presenting the 3 integrated platform profiles with instant demo one-tap entry."
+    },
+    {
+      "name": "ConsumerExplore",
+      "purpose": "City Store Explorer by categories, featured stores, verified badges, and search.",
+      "states": {
+        "loading": "Shimmer card skeletons simulating store items",
+        "empty": "No stores found in this category. Try another filter.",
+        "error": "Unable to load city directory. Check network connection."
+      },
+      "layout": "Vertical scroll with top sticky glass search header, horizontal category pill selector, and single-column store cards with verified badges and ratings."
+    },
+    {
+      "name": "StoreDetail",
+      "purpose": "Comprehensive store profile with 1-click WhatsApp, direct phone, map address, product catalog, and reviews.",
+      "states": {
+        "loading": "Cover banner skeleton and shimmer list rows",
+        "empty": "No products listed in catalog yet.",
+        "error": "Could not retrieve store details."
+      },
+      "layout": "Full-bleed hero banner with gradient scrim, sticky bottom action bar with 1-Click WhatsApp CTA, collapsible catalog grid, and review feed."
+    },
+    {
+      "name": "StoreOwnerDashboard",
+      "purpose": "Store owner analytics, SaaS plan upgrades (Free, Pro, Premium), catalog management, and banner promotions.",
+      "states": {
+        "loading": "Dashboard card skeleton loaders",
+        "empty": "No analytics data recorded yet for this billing cycle.",
+        "error": "Failed to sync store metrics."
+      },
+      "layout": "Scrollable dashboard with KPI metric cards, SaaS Plan Upgrade banner, catalog quick actions, and traffic analytics."
+    },
+    {
+      "name": "SuperAdminPanel",
+      "purpose": "Platform-wide management of registered city stores, SaaS subscription tiers, verification badges, and system revenue.",
+      "states": {
+        "loading": "Table row skeleton loaders",
+        "empty": "No registered merchant stores found in platform database.",
+        "error": "Error loading platform governance console."
+      },
+      "layout": "Executive overview cards, pending verification store list with approve/reject actions, and global SaaS tier distribution chart."
+    }
+  ],
+  "images": {
+    "hero_store": {
+      "url": "https://images.unsplash.com/photo-1774971343484-dfbcc2fdcca6?q=80&w=1200&auto=format&fit=crop",
+      "dark": "https://images.unsplash.com/photo-1771896902541-f5b52bbe477b?q=80&w=1200&auto=format&fit=crop",
+      "alt": "Urban boutique storefront facade"
+    }
+  },
+  "instructions_to_main_agent": "Implement 3 integrated profiles (Consumidor, Lojista, Super Admin) with a RoleSwitcher screen. Use iOS-Native Clean personality with warm ochre and amber accents. Ensure 1-click WhatsApp conversion, SaaS plan tiers (Grátis, Pro, Premium), catalog management, and verified badges. Strictly adhere to touch targets >= 44pt, loading/empty/error states on all screens, and no banned colors."
+}
