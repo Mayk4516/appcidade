@@ -17,11 +17,11 @@ import {
   Phone,
   Store,
   Shield,
-  Check,
-  Sparkles,
+  MapPin,
 } from "lucide-react-native";
-import { useTheme, makeStyles } from "@/src/theme";
-import { useAuth, DEMO_USERS } from "@/src/context/AuthContext";
+import { useTheme, makeStyles, INK, TACTILE_CARD } from "@/src/theme";
+import { PressableScale } from "@/src/components/PressableScale";
+import { useAuth } from "@/src/context/AuthContext";
 import { UserRole } from "@/src/types";
 
 export default function AuthLoginScreen() {
@@ -46,7 +46,6 @@ export default function AuthLoginScreen() {
       setErrorMessage("Por favor, preencha todos os campos obrigatórios.");
       return;
     }
-
     setIsLoading(true);
     try {
       const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL || "";
@@ -67,20 +66,13 @@ export default function AuthLoginScreen() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
-
       const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.detail || "Falha na autenticação");
-      }
+      if (!res.ok) throw new Error(data.detail || "Falha na autenticação");
 
       await login(data.access_token, data.user);
-      if (data.user.role === "store_owner") {
-        router.replace("/owner/dashboard" as any);
-      } else if (data.user.role === "super_admin") {
-        router.replace("/admin/dashboard" as any);
-      } else {
-        router.replace("/(tabs)" as any);
-      }
+      if (data.user.role === "store_owner") router.replace("/owner/dashboard" as any);
+      else if (data.user.role === "super_admin") router.replace("/admin/dashboard" as any);
+      else router.replace("/(tabs)" as any);
     } catch (e: any) {
       setErrorMessage(e.message || "Erro de conexão com o servidor");
     } finally {
@@ -93,13 +85,9 @@ export default function AuthLoginScreen() {
     setIsLoading(true);
     try {
       await switchDemoRole(role);
-      if (role === "store_owner") {
-        router.replace("/owner/dashboard" as any);
-      } else if (role === "super_admin") {
-        router.replace("/admin/dashboard" as any);
-      } else {
-        router.replace("/(tabs)" as any);
-      }
+      if (role === "store_owner") router.replace("/owner/dashboard" as any);
+      else if (role === "super_admin") router.replace("/admin/dashboard" as any);
+      else router.replace("/(tabs)" as any);
     } catch (e: any) {
       setErrorMessage(e?.message || "Erro ao entrar com conta demo");
     } finally {
@@ -107,227 +95,174 @@ export default function AuthLoginScreen() {
     }
   };
 
+  const demoCards: { role: UserRole; label: string; sub: string; Icon: any; bg: string; fg: string; testID: string }[] = [
+    { role: "user", label: "Consumidor", sub: "Explorar lojas", Icon: User, bg: "#DCFCE7", fg: "#15803D", testID: "quick-demo-consumer-btn" },
+    { role: "store_owner", label: "Lojista", sub: "Painel SaaS", Icon: Store, bg: colors.brandTertiary, fg: colors.brandPrimary, testID: "quick-demo-owner-btn" },
+    { role: "super_admin", label: "Admin", sub: "Governança", Icon: Shield, bg: "#EEF2FF", fg: "#4338CA", testID: "quick-demo-admin-btn" },
+  ];
+
   return (
-    <View style={[styles.container, { paddingTop: insets.top }]}>
-      {/* Header Bar */}
-      <View style={styles.headerBar}>
+    <View style={styles.container}>
+      {/* Dark hero header */}
+      <View style={[styles.hero, { paddingTop: insets.top + 8 }]}>
         <Pressable
           testID="auth-back-btn"
           style={styles.backBtn}
+          hitSlop={8}
           onPress={() => router.back()}
         >
-          <ArrowLeft size={20} color={colors.onSurface} />
+          <ArrowLeft size={20} color="#FFFFFF" />
         </Pressable>
-        <Text style={styles.headerTitle}>
-          {mode === "login" ? "Entrar na Plataforma" : "Criar Nova Conta"}
-        </Text>
-        <View style={{ width: 36 }} />
+        <View style={styles.brandBlock}>
+          <View style={styles.brandMark}>
+            <MapPin size={26} color="#FFFFFF" />
+          </View>
+          <Text style={styles.brandTitle}>CityHub</Text>
+          <Text style={styles.brandSubtitle}>
+            {mode === "login" ? "Bem-vindo de volta à sua cidade" : "Crie sua conta e comece agora"}
+          </Text>
+        </View>
       </View>
 
       <ScrollView
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 32 }]}
         showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
       >
-        {/* 1-Tap Quick Demo Cards */}
-        <View style={styles.demoSection}>
-          <Text style={styles.demoSectionLabel}>
-            ENTRAR RAPIDAMENTE COM CONTAS DEMO
-          </Text>
-
-          <View style={styles.demoGrid}>
-            <Pressable
-              testID="quick-demo-consumer-btn"
-              style={[styles.demoCard, { borderColor: "#A7F3D0" }]}
-              onPress={() => handleQuickDemo("user")}
+        {/* Demo quick cards */}
+        <Text style={styles.groupLabel}>ENTRAR RAPIDAMENTE (DEMO)</Text>
+        <View style={styles.demoGrid}>
+          {demoCards.map((d) => (
+            <PressableScale
+              key={d.role}
+              testID={d.testID}
+              style={styles.demoCard}
+              haptic="medium"
+              onPress={() => handleQuickDemo(d.role)}
             >
-              <User size={18} color="#047857" />
-              <Text style={styles.demoCardTitle}>Consumidor</Text>
-              <Text style={styles.demoCardSubtitle}>Explorar lojas</Text>
-            </Pressable>
-
-            <Pressable
-              testID="quick-demo-owner-btn"
-              style={[styles.demoCard, { borderColor: colors.brandPrimary }]}
-              onPress={() => handleQuickDemo("store_owner")}
-            >
-              <Store size={18} color={colors.brandPrimary} />
-              <Text style={styles.demoCardTitle}>Lojista</Text>
-              <Text style={styles.demoCardSubtitle}>Painel SaaS</Text>
-            </Pressable>
-
-            <Pressable
-              testID="quick-demo-admin-btn"
-              style={[styles.demoCard, { borderColor: "#C7D2FE" }]}
-              onPress={() => handleQuickDemo("super_admin")}
-            >
-              <Shield size={18} color="#4338CA" />
-              <Text style={styles.demoCardTitle}>Admin</Text>
-              <Text style={styles.demoCardSubtitle}>Governança</Text>
-            </Pressable>
-          </View>
+              <View style={[styles.demoIcon, { backgroundColor: d.bg }]}>
+                <d.Icon size={22} color={d.fg} />
+              </View>
+              <Text style={styles.demoCardTitle}>{d.label}</Text>
+              <Text style={styles.demoCardSub}>{d.sub}</Text>
+            </PressableScale>
+          ))}
         </View>
 
-        <View style={styles.orDividerRow}>
+        <View style={styles.orRow}>
           <View style={styles.orLine} />
           <Text style={styles.orText}>OU USE SEUS DADOS</Text>
           <View style={styles.orLine} />
         </View>
 
-        {/* Mode Switcher Tabs */}
+        {/* Mode tabs */}
         <View style={styles.modeTabs}>
           <Pressable
             testID="auth-mode-login-tab"
             style={[styles.modeTab, mode === "login" && styles.modeTabActive]}
             onPress={() => setMode("login")}
           >
-            <Text
-              style={[
-                styles.modeTabText,
-                mode === "login" && styles.modeTabTextActive,
-              ]}
-            >
+            <Text style={[styles.modeTabText, mode === "login" && styles.modeTabTextActive]}>
               Fazer Login
             </Text>
           </Pressable>
-
           <Pressable
             testID="auth-mode-register-tab"
             style={[styles.modeTab, mode === "register" && styles.modeTabActive]}
             onPress={() => setMode("register")}
           >
-            <Text
-              style={[
-                styles.modeTabText,
-                mode === "register" && styles.modeTabTextActive,
-              ]}
-            >
+            <Text style={[styles.modeTabText, mode === "register" && styles.modeTabTextActive]}>
               Cadastrar
             </Text>
           </Pressable>
         </View>
 
-        {/* Error message */}
         {errorMessage ? (
           <View style={styles.errorBox} testID="auth-error-box">
-            <Text style={styles.errorBoxText}>{errorMessage}</Text>
+            <Text style={styles.errorText}>{errorMessage}</Text>
           </View>
         ) : null}
 
-        {/* Inputs */}
         {mode === "register" && (
           <>
-            <View style={styles.inputContainer}>
-              <Text style={styles.inputLabel}>Nome Completo</Text>
-              <View style={styles.inputWrapper}>
-                <User size={18} color={colors.muted} />
-                <TextInput
-                  testID="auth-name-input"
-                  style={styles.textInput}
-                  placeholder="Seu nome ou da empresa"
-                  placeholderTextColor={colors.muted}
-                  value={name}
-                  onChangeText={setName}
-                />
-              </View>
-            </View>
-
-            <View style={styles.inputContainer}>
-              <Text style={styles.inputLabel}>WhatsApp / Telefone</Text>
-              <View style={styles.inputWrapper}>
-                <Phone size={18} color={colors.muted} />
-                <TextInput
-                  testID="auth-phone-input"
-                  style={styles.textInput}
-                  placeholder="(11) 99999-9999"
-                  placeholderTextColor={colors.muted}
-                  value={phone}
-                  onChangeText={setPhone}
-                  keyboardType="phone-pad"
-                />
-              </View>
-            </View>
-
-            {/* Role picker for registration */}
-            <View style={styles.inputContainer}>
-              <Text style={styles.inputLabel}>Tipo de Conta</Text>
-              <View style={styles.roleSelectionRow}>
-                <Pressable
-                  testID="role-select-consumer"
-                  style={[
-                    styles.roleRadioBtn,
-                    selectedRole === "user" && styles.roleRadioBtnActive,
-                  ]}
-                  onPress={() => setSelectedRole("user")}
-                >
-                  <Text
-                    style={[
-                      styles.roleRadioText,
-                      selectedRole === "user" && styles.roleRadioTextActive,
-                    ]}
-                  >
-                    Consumidor
-                  </Text>
-                </Pressable>
-
-                <Pressable
-                  testID="role-select-owner"
-                  style={[
-                    styles.roleRadioBtn,
-                    selectedRole === "store_owner" && styles.roleRadioBtnActive,
-                  ]}
-                  onPress={() => setSelectedRole("store_owner")}
-                >
-                  <Text
-                    style={[
-                      styles.roleRadioText,
-                      selectedRole === "store_owner" && styles.roleRadioTextActive,
-                    ]}
-                  >
-                    Lojista (Cadastrar Loja)
-                  </Text>
-                </Pressable>
-              </View>
+            <Field label="Nome Completo">
+              <User size={18} color={colors.muted} />
+              <TextInput
+                testID="auth-name-input"
+                style={styles.input}
+                placeholder="Seu nome ou da empresa"
+                placeholderTextColor={colors.muted}
+                value={name}
+                onChangeText={setName}
+              />
+            </Field>
+            <Field label="WhatsApp / Telefone">
+              <Phone size={18} color={colors.muted} />
+              <TextInput
+                testID="auth-phone-input"
+                style={styles.input}
+                placeholder="(11) 99999-9999"
+                placeholderTextColor={colors.muted}
+                keyboardType="phone-pad"
+                value={phone}
+                onChangeText={setPhone}
+              />
+            </Field>
+            <Text style={styles.fieldLabel}>Tipo de Conta</Text>
+            <View style={styles.roleRow}>
+              <Pressable
+                testID="role-select-consumer"
+                style={[styles.roleBtn, selectedRole === "user" && styles.roleBtnActive]}
+                onPress={() => setSelectedRole("user")}
+              >
+                <Text style={[styles.roleBtnText, selectedRole === "user" && styles.roleBtnTextActive]}>
+                  Consumidor
+                </Text>
+              </Pressable>
+              <Pressable
+                testID="role-select-owner"
+                style={[styles.roleBtn, selectedRole === "store_owner" && styles.roleBtnActive]}
+                onPress={() => setSelectedRole("store_owner")}
+              >
+                <Text style={[styles.roleBtnText, selectedRole === "store_owner" && styles.roleBtnTextActive]}>
+                  Lojista
+                </Text>
+              </Pressable>
             </View>
           </>
         )}
 
-        <View style={styles.inputContainer}>
-          <Text style={styles.inputLabel}>E-mail</Text>
-          <View style={styles.inputWrapper}>
-            <Mail size={18} color={colors.muted} />
-            <TextInput
-              testID="auth-email-input"
-              style={styles.textInput}
-              placeholder="seuemail@exemplo.com"
-              placeholderTextColor={colors.muted}
-              autoCapitalize="none"
-              keyboardType="email-address"
-              value={email}
-              onChangeText={setEmail}
-            />
-          </View>
-        </View>
+        <Field label="E-mail">
+          <Mail size={18} color={colors.muted} />
+          <TextInput
+            testID="auth-email-input"
+            style={styles.input}
+            placeholder="seuemail@exemplo.com"
+            placeholderTextColor={colors.muted}
+            autoCapitalize="none"
+            keyboardType="email-address"
+            value={email}
+            onChangeText={setEmail}
+          />
+        </Field>
 
-        <View style={styles.inputContainer}>
-          <Text style={styles.inputLabel}>Senha</Text>
-          <View style={styles.inputWrapper}>
-            <Lock size={18} color={colors.muted} />
-            <TextInput
-              testID="auth-password-input"
-              style={styles.textInput}
-              placeholder="Sua senha secreta"
-              placeholderTextColor={colors.muted}
-              secureTextEntry
-              value={password}
-              onChangeText={setPassword}
-            />
-          </View>
-        </View>
+        <Field label="Senha">
+          <Lock size={18} color={colors.muted} />
+          <TextInput
+            testID="auth-password-input"
+            style={styles.input}
+            placeholder="Sua senha secreta"
+            placeholderTextColor={colors.muted}
+            secureTextEntry
+            value={password}
+            onChangeText={setPassword}
+          />
+        </Field>
 
-        {/* Submit button */}
-        <Pressable
+        <PressableScale
           testID="auth-submit-btn"
           style={styles.submitBtn}
+          haptic="medium"
           onPress={handleCustomAuth}
           disabled={isLoading}
         >
@@ -338,197 +273,233 @@ export default function AuthLoginScreen() {
               {mode === "login" ? "Entrar na Conta" : "Criar Minha Conta"}
             </Text>
           )}
-        </Pressable>
+        </PressableScale>
       </ScrollView>
     </View>
   );
 }
+
+const Field: React.FC<{ label: string; children: React.ReactNode }> = ({ label, children }) => {
+  const styles = useStyles();
+  return (
+    <View style={styles.fieldContainer}>
+      <Text style={styles.fieldLabel}>{label}</Text>
+      <View style={styles.inputWrapper}>{children}</View>
+    </View>
+  );
+};
 
 const useStyles = makeStyles((colors) => ({
   container: {
     flex: 1,
     backgroundColor: colors.surface,
   },
-  headerBar: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.divider,
+  hero: {
+    backgroundColor: colors.surfaceInverse,
+    paddingHorizontal: 20,
+    paddingBottom: 32,
+    borderBottomLeftRadius: 28,
+    borderBottomRightRadius: 28,
   },
   backBtn: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: colors.surfaceSecondary,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: "rgba(255,255,255,0.12)",
     justifyContent: "center",
     alignItems: "center",
   },
-  headerTitle: {
-    fontSize: 16,
-    fontWeight: "700",
-    color: colors.onSurface,
+  brandBlock: {
+    alignItems: "center",
+    marginTop: 12,
+  },
+  brandMark: {
+    width: 60,
+    height: 60,
+    borderRadius: 20,
+    backgroundColor: colors.brandPrimary,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 12,
+    borderBottomWidth: 4,
+    borderBottomColor: colors.brandSecondary,
+  },
+  brandTitle: {
+    fontSize: 28,
+    fontWeight: "800",
+    color: "#FFFFFF",
+    letterSpacing: -0.5,
+  },
+  brandSubtitle: {
+    fontSize: 14,
+    color: "rgba(255,255,255,0.7)",
+    marginTop: 4,
   },
   scrollContent: {
     paddingHorizontal: 20,
-    paddingTop: 16,
-    paddingBottom: 40,
+    paddingTop: 24,
   },
-  demoSection: {
-    marginBottom: 20,
-  },
-  demoSectionLabel: {
+  groupLabel: {
     fontSize: 11,
-    fontWeight: "700",
+    fontWeight: "800",
     color: colors.brandPrimary,
     letterSpacing: 0.8,
-    marginBottom: 10,
+    marginBottom: 12,
   },
   demoGrid: {
     flexDirection: "row",
-    gap: 8,
+    gap: 10,
   },
   demoCard: {
     flex: 1,
     backgroundColor: colors.surfaceSecondary,
-    borderWidth: 1.5,
-    borderRadius: 12,
-    padding: 10,
+    borderWidth: 2,
+    borderColor: colors.border,
+    borderRadius: 18,
+    padding: 12,
     alignItems: "center",
+    ...TACTILE_CARD,
+  },
+  demoIcon: {
+    width: 44,
+    height: 44,
+    borderRadius: 14,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 8,
   },
   demoCardTitle: {
-    fontSize: 13,
-    fontWeight: "700",
-    color: colors.onSurfaceSecondary,
-    marginTop: 4,
+    fontSize: 14,
+    fontWeight: "800",
+    color: colors.onSurface,
   },
-  demoCardSubtitle: {
-    fontSize: 10,
+  demoCardSub: {
+    fontSize: 11,
     color: colors.muted,
+    marginTop: 1,
   },
-  orDividerRow: {
+  orRow: {
     flexDirection: "row",
     alignItems: "center",
     gap: 12,
-    marginVertical: 16,
+    marginVertical: 22,
   },
   orLine: {
     flex: 1,
     height: 1,
-    backgroundColor: colors.divider,
+    backgroundColor: colors.border,
   },
   orText: {
     fontSize: 11,
-    fontWeight: "700",
+    fontWeight: "800",
     color: colors.muted,
     letterSpacing: 0.6,
   },
   modeTabs: {
     flexDirection: "row",
     backgroundColor: colors.surfaceTertiary,
-    borderRadius: 12,
-    padding: 4,
+    borderRadius: 16,
+    padding: 5,
     marginBottom: 20,
   },
   modeTab: {
     flex: 1,
-    paddingVertical: 10,
+    paddingVertical: 11,
     alignItems: "center",
-    borderRadius: 10,
+    borderRadius: 12,
   },
   modeTabActive: {
     backgroundColor: colors.surfaceSecondary,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.08,
-    shadowRadius: 2,
-    elevation: 2,
+    ...TACTILE_CARD,
   },
   modeTabText: {
-    fontSize: 13,
-    fontWeight: "600",
+    fontSize: 14,
+    fontWeight: "700",
     color: colors.muted,
   },
   modeTabTextActive: {
-    color: colors.onSurfaceSecondary,
-    fontWeight: "700",
+    color: colors.onSurface,
+    fontWeight: "800",
   },
   errorBox: {
     backgroundColor: "#FEE2E2",
+    borderWidth: 2,
+    borderColor: "#FCA5A5",
     padding: 12,
-    borderRadius: 10,
+    borderRadius: 14,
     marginBottom: 16,
   },
-  errorBoxText: {
+  errorText: {
     color: colors.error,
-    fontSize: 12,
-    fontWeight: "600",
-  },
-  inputContainer: {
-    marginBottom: 14,
-  },
-  inputLabel: {
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: "700",
-    color: colors.onSurfaceSecondary,
-    marginBottom: 6,
+  },
+  fieldContainer: {
+    marginBottom: 16,
+  },
+  fieldLabel: {
+    fontSize: 13,
+    fontWeight: "800",
+    color: colors.onSurface,
+    marginBottom: 8,
   },
   inputWrapper: {
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: colors.surfaceSecondary,
-    borderWidth: 1,
+    borderWidth: 2,
     borderColor: colors.border,
-    borderRadius: 12,
-    paddingHorizontal: 12,
-    height: 48,
+    borderRadius: 14,
+    paddingHorizontal: 14,
+    height: 54,
     gap: 10,
   },
-  textInput: {
+  input: {
     flex: 1,
-    fontSize: 14,
+    fontSize: 15,
     color: colors.onSurface,
     height: "100%",
   },
-  roleSelectionRow: {
+  roleRow: {
     flexDirection: "row",
-    gap: 8,
+    gap: 10,
+    marginBottom: 16,
   },
-  roleRadioBtn: {
+  roleBtn: {
     flex: 1,
     backgroundColor: colors.surfaceSecondary,
-    borderWidth: 1,
+    borderWidth: 2,
     borderColor: colors.border,
-    borderRadius: 10,
-    paddingVertical: 10,
+    borderRadius: 14,
+    paddingVertical: 13,
     alignItems: "center",
   },
-  roleRadioBtnActive: {
+  roleBtnActive: {
     borderColor: colors.brandPrimary,
     backgroundColor: colors.brandTertiary,
   },
-  roleRadioText: {
-    fontSize: 12,
-    fontWeight: "600",
+  roleBtnText: {
+    fontSize: 13,
+    fontWeight: "700",
     color: colors.muted,
   },
-  roleRadioTextActive: {
+  roleBtnTextActive: {
     color: colors.brandPrimary,
-    fontWeight: "700",
+    fontWeight: "800",
   },
   submitBtn: {
     backgroundColor: colors.brandPrimary,
-    height: 50,
-    borderRadius: 14,
+    height: 56,
+    borderRadius: 18,
     justifyContent: "center",
     alignItems: "center",
     marginTop: 8,
+    borderBottomWidth: 4,
+    borderBottomColor: INK,
   },
   submitBtnText: {
     color: "#FFFFFF",
-    fontSize: 15,
-    fontWeight: "700",
+    fontSize: 16,
+    fontWeight: "800",
   },
 }));

@@ -23,6 +23,7 @@ Aplicativo mobile SaaS para cadastrar lojas de uma cidade. O usuário final desc
 - Painéis por papel + planos SaaS.
 
 ## Implementado (com datas)
+- 2026-06 (redesign): Identidade visual "fusão Nubank + Duolingo" (mantendo paleta âmbar): tokens refinados em `theme.ts` + helpers `TACTILE_CARD`/`TACTILE_BLOCK`/`INK`; novo componente `PressableScale` (reanimated + haptics). Home do consumidor totalmente repaginada (hero escuro com saudação, busca flutuante, tiles de categoria táteis, carrossel VIP, skeletons); StoreCard, Login, Categorias, Favoritos, Loja, Planos, Painel Lojista e Admin com cartões/botões táteis (raio 20, borda 2px, profundidade). Regressão 8/8 (iteration_3).
 - 2026-06: Plataforma full-stack inicial (auth JWT/RBAC, seed demo, categorias, lojas, favoritos, avaliações, produtos, métricas de lojista e admin).
 - 2026-06: Telas — login, explorar, categorias, favoritos, perfil, detalhe de loja, painel/catálogo/planos de lojista, dashboard admin.
 - 2026-06 (esta sessão): Correção do fluxo de avaliação do consumidor:

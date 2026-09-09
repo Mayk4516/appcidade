@@ -136,13 +136,14 @@ const useStyles = makeStyles((colors) => ({
     paddingBottom: 8,
   },
   title: {
-    fontSize: 22,
+    fontSize: 26,
     fontWeight: "800",
     color: colors.onSurface,
+    letterSpacing: -0.5,
     marginBottom: 4,
   },
   subtitle: {
-    fontSize: 13,
+    fontSize: 14,
     color: colors.muted,
   },
   listContent: {
@@ -192,14 +193,16 @@ const useStyles = makeStyles((colors) => ({
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: colors.brandPrimary,
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderRadius: 12,
+    paddingHorizontal: 24,
+    height: 52,
+    borderRadius: 16,
     gap: 8,
+    borderBottomWidth: 4,
+    borderBottomColor: "#1C1917",
   },
   actionBtnText: {
     color: "#FFFFFF",
-    fontSize: 14,
-    fontWeight: "700",
+    fontSize: 15,
+    fontWeight: "800",
   },
 }));

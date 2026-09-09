@@ -24,7 +24,7 @@ import {
   Check,
   AlertTriangle,
 } from "lucide-react-native";
-import { useTheme, makeStyles } from "@/src/theme";
+import { useTheme, makeStyles, TACTILE_CARD } from "@/src/theme";
 import { api } from "@/src/api";
 import { Store as StoreType, AdminMetrics } from "@/src/types";
 
@@ -403,10 +403,11 @@ const useStyles = makeStyles((colors) => ({
   kpiCard: {
     width: "48%",
     backgroundColor: colors.surfaceSecondary,
-    borderWidth: 1,
+    borderWidth: 2,
     borderColor: colors.border,
-    borderRadius: 14,
-    padding: 12,
+    borderRadius: 18,
+    padding: 14,
+    ...TACTILE_CARD,
   },
   kpiIcon: {
     width: 40,

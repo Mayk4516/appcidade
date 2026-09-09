@@ -3,7 +3,6 @@ import {
   View,
   Text,
   ScrollView,
-  Pressable,
   ActivityIndicator,
   RefreshControl,
 } from "react-native";
@@ -22,7 +21,8 @@ import {
   ChevronRight,
   Store,
 } from "lucide-react-native";
-import { useTheme, makeStyles } from "@/src/theme";
+import { useTheme, makeStyles, TACTILE_CARD } from "@/src/theme";
+import { PressableScale } from "@/src/components/PressableScale";
 import { Header } from "@/src/components/Header";
 import { api } from "@/src/api";
 import { Category } from "@/src/types";
@@ -93,10 +93,11 @@ export default function CategoriesScreen() {
             {categories.map((cat) => {
               const IconComp = ICON_MAP[cat.icon] || Store;
               return (
-                <Pressable
+                <PressableScale
                   key={cat.id}
                   testID={`category-card-${cat.id}`}
                   style={styles.categoryCard}
+                  scaleTo={0.97}
                   onPress={() => handleCategoryPress(cat.id)}
                 >
                   <View style={styles.cardHeader}>
@@ -119,7 +120,7 @@ export default function CategoriesScreen() {
                     <Text style={styles.viewStoresText}>Ver estabelecimentos</Text>
                     <ChevronRight size={14} color={colors.brandPrimary} />
                   </View>
-                </Pressable>
+                </PressableScale>
               );
             })}
           </View>
@@ -143,15 +144,16 @@ const useStyles = makeStyles((colors) => ({
     marginBottom: 20,
   },
   title: {
-    fontSize: 22,
+    fontSize: 26,
     fontWeight: "800",
     color: colors.onSurface,
+    letterSpacing: -0.5,
     marginBottom: 4,
   },
   subtitle: {
-    fontSize: 13,
+    fontSize: 14,
     color: colors.muted,
-    lineHeight: 18,
+    lineHeight: 19,
   },
   loadingContainer: {
     paddingVertical: 60,
@@ -168,15 +170,11 @@ const useStyles = makeStyles((colors) => ({
   },
   categoryCard: {
     backgroundColor: colors.surfaceSecondary,
-    borderWidth: 1,
+    borderWidth: 2,
     borderColor: colors.border,
-    borderRadius: 16,
+    borderRadius: 20,
     padding: 16,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.04,
-    shadowRadius: 4,
-    elevation: 1,
+    ...TACTILE_CARD,
   },
   cardHeader: {
     flexDirection: "row",

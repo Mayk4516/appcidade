@@ -1,0 +1,30 @@
+{
+  "summary": "Full frontend regression after Nubank+Duolingo redesign PASSES 100%. All 8 flows in the request verified end-to-end on mobile viewport (390x844) against the deployed preview URL. Redesigned Home (dark surfaceInverse hero, floating search bar, chunky category tiles, VIP featured carousel) preserves every testID: header-profile-role-btn opens RoleSwitcher, search-stores-input filters, 9 category-chip-* tiles work, filter-verified-toggle toggles, 2 featured-card-* carousel items render, store-card-store_1 opens store, favorite-btn-store_3 toggles saved state. Consumer review regression: quick-demo-consumer -> store_1 -> store-tab-reviews -> open-add-review-modal-btn -> rating-star-btn-4 -> review-comment-input -> submit-review-btn -> modal closes and review count increments 5->6 with new TEST_ review visible. Custom login (user@cidadehub.com / user123) via auth-email/password-input + auth-submit-btn enters tabs correctly. quick-demo-owner-btn lands on /owner/dashboard, plan-card-{free,pro,premium} + subscribe-btn-{free,pro,premium} all present and subscribe click updates the plan (green success banner). quick-demo-admin-btn lands on /admin/dashboard. PressableScale (reanimated + haptics) works fine on web; only console warning is the pre-existing 'shadow* deprecated' notice (non-blocking).",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [],
+    "react_native_issues": []
+  },
+  "test_report_links": [
+    "/app/test_reports/ui/home_search.jpeg",
+    "/app/test_reports/ui/review_flow_pass.jpeg",
+    "/app/test_reports/ui/plans.jpeg"
+  ],
+  "action_items": [
+    "Non-blocking: address the 'shadow* style props are deprecated. Use boxShadow.' console warning (pre-existing before redesign) by migrating remaining shadow* usages to the new boxShadow API when convenient."
+  ],
+  "critical_code_review_comments": [
+    "PressableScale correctly guards Haptics behind Platform.OS !== 'web' so no runtime error on web preview.",
+    "Home hero uses ScrollView + FlatList together (ScrollView is a ListHeaderComponent child): fine functionally, but nested horizontal ScrollViews inside a FlatList header can hurt performance on lower-end devices; consider FlatList horizontal or a memoized header."
+  ],
+  "updated_files": [
+    "/app/test_reports/iteration_3.json"
+  ],
+  "success_rate": {"backend": "not tested (frontend-only request)", "frontend": "100% (8/8 flows)"},
+  "seed_data_creation": "One extra TEST_redesign_regression_review added to store_1 via UI (review_count 5 -> 6).",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Preview: https://city-shop-hub-3.preview.emergentagent.com. Redesign regression verified at 390x844. All testIDs from iterations 1-2 remain valid post-redesign (header-profile-role-btn, search-stores-input, category-chip-{all|id}, filter-verified-toggle, featured-card-{id}, store-card-{id}, favorite-btn-{id}, store-tab-reviews, open-add-review-modal-btn, rating-star-btn-{n}, review-comment-input, submit-review-btn, quick-demo-{consumer,owner,admin}-btn, auth-{email,password}-input, auth-submit-btn, plan-card-{tier}, subscribe-btn-{tier}, goto-plans-upgrade-menu-btn). Notes: rating-star-btn-4 lies inside the modal below the fold on 390x844 - use scroll_into_view_if_needed before clicking."
+}

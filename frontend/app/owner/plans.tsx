@@ -18,7 +18,7 @@ import {
   Shield,
   Zap,
 } from "lucide-react-native";
-import { useTheme, makeStyles } from "@/src/theme";
+import { useTheme, makeStyles, TACTILE_CARD } from "@/src/theme";
 import { api } from "@/src/api";
 import { SaasPlan } from "@/src/types";
 
@@ -234,10 +234,11 @@ const useStyles = makeStyles((colors) => ({
     letterSpacing: 0.8,
   },
   heroTitle: {
-    fontSize: 22,
+    fontSize: 26,
     fontWeight: "800",
     color: colors.onSurface,
     textAlign: "center",
+    letterSpacing: -0.5,
     marginBottom: 6,
   },
   heroSubtitle: {
@@ -267,10 +268,11 @@ const useStyles = makeStyles((colors) => ({
   },
   planCard: {
     backgroundColor: colors.surfaceSecondary,
-    borderWidth: 1,
+    borderWidth: 2,
     borderColor: colors.border,
-    borderRadius: 18,
-    padding: 16,
+    borderRadius: 20,
+    padding: 18,
+    ...TACTILE_CARD,
   },
   planCardVIP: {
     borderColor: colors.brand,
@@ -343,20 +345,24 @@ const useStyles = makeStyles((colors) => ({
   },
   subscribeBtn: {
     backgroundColor: colors.brandPrimary,
-    paddingVertical: 12,
-    borderRadius: 12,
+    height: 50,
+    borderRadius: 16,
     alignItems: "center",
+    justifyContent: "center",
+    borderBottomWidth: 4,
+    borderBottomColor: "#1C1917",
   },
   subscribeBtnVIP: {
     backgroundColor: colors.brandSecondary,
   },
   currentPlanBtn: {
     backgroundColor: colors.surfaceTertiary,
+    borderBottomColor: colors.borderStrong,
   },
   subscribeBtnText: {
     color: "#FFFFFF",
-    fontSize: 14,
-    fontWeight: "700",
+    fontSize: 15,
+    fontWeight: "800",
   },
   currentPlanBtnText: {
     color: colors.muted,

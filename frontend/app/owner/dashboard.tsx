@@ -31,7 +31,7 @@ import {
   X,
   Award,
 } from "lucide-react-native";
-import { useTheme, makeStyles } from "@/src/theme";
+import { useTheme, makeStyles, TACTILE_CARD } from "@/src/theme";
 import { useAuth } from "@/src/context/AuthContext";
 import { api } from "@/src/api";
 import { Store as StoreType } from "@/src/types";
@@ -849,14 +849,16 @@ const useStyles = makeStyles((colors) => ({
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: colors.brandPrimary,
-    paddingVertical: 10,
-    borderRadius: 10,
+    height: 46,
+    borderRadius: 14,
     gap: 6,
+    borderBottomWidth: 4,
+    borderBottomColor: "#1C1917",
   },
   editProfileBtnText: {
     color: "#FFFFFF",
     fontSize: 13,
-    fontWeight: "700",
+    fontWeight: "800",
   },
   viewCustomerBtn: {
     flex: 1,
@@ -943,10 +945,11 @@ const useStyles = makeStyles((colors) => ({
   metricCard: {
     width: "48%",
     backgroundColor: colors.surfaceSecondary,
-    borderWidth: 1,
+    borderWidth: 2,
     borderColor: colors.border,
-    borderRadius: 14,
-    padding: 12,
+    borderRadius: 18,
+    padding: 14,
+    ...TACTILE_CARD,
   },
   metricIcon: {
     width: 36,
@@ -1068,15 +1071,17 @@ const useStyles = makeStyles((colors) => ({
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: colors.brandPrimary,
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderRadius: 12,
+    paddingHorizontal: 24,
+    height: 52,
+    borderRadius: 16,
     gap: 8,
+    borderBottomWidth: 4,
+    borderBottomColor: "#1C1917",
   },
   createFirstStoreBtnText: {
     color: "#FFFFFF",
-    fontSize: 14,
-    fontWeight: "700",
+    fontSize: 15,
+    fontWeight: "800",
   },
   modalOverlay: {
     flex: 1,

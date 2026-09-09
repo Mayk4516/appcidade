@@ -7,7 +7,7 @@ import {
   Pressable,
   FlatList,
   RefreshControl,
-  ActivityIndicator,
+  StyleSheet,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -15,26 +15,28 @@ import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import {
   Search,
-  SlidersHorizontal,
   Sparkles,
   Utensils,
   Shirt,
-  Sparkle,
   ShoppingCart,
   Wrench,
   PawPrint,
-  Home,
+  Home as HomeIcon,
   Smartphone,
   CheckCircle2,
   X,
+  MapPin,
+  ChevronDown,
+  User,
+  Store as StoreIcon,
+  Shield,
 } from "lucide-react-native";
-import { useTheme, makeStyles } from "@/src/theme";
-import { Header } from "@/src/components/Header";
+import { useTheme, makeStyles, INK, TACTILE_CARD } from "@/src/theme";
+import { PressableScale } from "@/src/components/PressableScale";
 import { StoreCard } from "@/src/components/StoreCard";
 import { RoleSwitcherModal } from "@/src/components/RoleSwitcherModal";
 import { useAuth } from "@/src/context/AuthContext";
 import { api } from "@/src/api";
-import { Store, Category } from "@/src/types";
 
 const ICON_MAP: Record<string, any> = {
   utensils: Utensils,
@@ -43,9 +45,12 @@ const ICON_MAP: Record<string, any> = {
   "shopping-cart": ShoppingCart,
   wrench: Wrench,
   "paw-print": PawPrint,
-  home: Home,
+  home: HomeIcon,
   smartphone: Smartphone,
 };
+
+const TILE_COLORS = ["#FEF3C7", "#DCFCE7", "#DBEAFE", "#F3E8FF", "#FFE4E6", "#E0F2FE"];
+const TILE_ICON_COLORS = ["#B45309", "#15803D", "#1D4ED8", "#7E22CE", "#BE123C", "#0369A1"];
 
 export default function ConsumerExploreScreen() {
   const insets = useSafeAreaInsets();
@@ -60,8 +65,7 @@ export default function ConsumerExploreScreen() {
   const [verifiedOnly, setVerifiedOnly] = useState(false);
   const [isRoleModalVisible, setIsRoleModalVisible] = useState(false);
 
-  // Queries
-  const { data: categories = [], isLoading: isLoadingCategories } = useQuery({
+  const { data: categories = [] } = useQuery({
     queryKey: ["categories"],
     queryFn: api.getCategories,
   });
@@ -88,26 +92,56 @@ export default function ConsumerExploreScreen() {
       queryClient.invalidateQueries({ queryKey: ["stores"] });
       queryClient.invalidateQueries({ queryKey: ["user-favorites"] });
     } catch {
-      // Prompt user to login
       setIsRoleModalVisible(true);
     }
   };
 
   const featuredStores = stores.filter((s) => s.is_featured || s.plan_tier === "premium");
+  const firstName = user?.name?.split(" ")[0] || "Visitante";
+
+  const roleMeta = () => {
+    if (user?.role === "super_admin") return { label: "Admin", Icon: Shield };
+    if (user?.role === "store_owner") return { label: "Lojista", Icon: StoreIcon };
+    if (user) return { label: "Consumidor", Icon: User };
+    return { label: "Entrar", Icon: User };
+  };
+  const rm = roleMeta();
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top }]}>
-      {/* Top Header with City & Role Switcher */}
-      <Header onOpenRoleSwitcher={() => setIsRoleModalVisible(true)} />
+    <View style={styles.container}>
+      {/* ===== Nubank-style bold dark hero block ===== */}
+      <View style={[styles.hero, { paddingTop: insets.top + 14 }]}>
+        <View style={styles.heroTopRow}>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.heroGreeting}>Olá, {firstName} 👋</Text>
+            <Text style={styles.heroTagline}>O que você procura hoje na cidade?</Text>
+          </View>
+          <PressableScale
+            testID="header-profile-role-btn"
+            style={styles.rolePill}
+            haptic="selection"
+            onPress={() => setIsRoleModalVisible(true)}
+          >
+            <rm.Icon size={14} color={colors.brandTertiary} />
+            <Text style={styles.rolePillText}>{rm.label}</Text>
+            <ChevronDown size={13} color={colors.brandTertiary} />
+          </PressableScale>
+        </View>
 
-      {/* Sticky Top Bar: Search input & Verified toggle */}
-      <View style={styles.searchHeader}>
-        <View style={styles.searchBarContainer}>
-          <Search size={18} color={colors.muted} />
+        <View style={styles.locationRow}>
+          <MapPin size={14} color={colors.brandTertiary} />
+          <Text style={styles.locationText}>São Paulo, SP</Text>
+        </View>
+      </View>
+
+      {/* ===== Floating search bar overlapping the hero ===== */}
+      <View style={styles.searchFloatWrap}>
+        <View style={styles.searchBar}>
+          <Search size={19} color={colors.muted} />
           <TextInput
             testID="search-stores-input"
             style={styles.searchInput}
-            placeholder="Buscar lojas, pizzas, roupas, serviços..."
+            placeholder="Buscar lojas, pizzas, roupas..."
             placeholderTextColor={colors.muted}
             value={searchQuery}
             onChangeText={setSearchQuery}
@@ -117,199 +151,203 @@ export default function ConsumerExploreScreen() {
             <Pressable
               testID="clear-search-btn"
               onPress={() => setSearchQuery("")}
-              style={styles.clearSearchBtn}
+              hitSlop={8}
             >
-              <X size={16} color={colors.muted} />
+              <X size={17} color={colors.muted} />
             </Pressable>
           )}
         </View>
-
-        <Pressable
+        <PressableScale
           testID="filter-verified-toggle"
-          style={[styles.verifiedFilterBtn, verifiedOnly && styles.verifiedFilterBtnActive]}
+          style={[styles.verifiedBtn, verifiedOnly && styles.verifiedBtnActive]}
           onPress={() => setVerifiedOnly(!verifiedOnly)}
         >
-          <CheckCircle2
-            size={16}
-            color={verifiedOnly ? "#FFFFFF" : colors.brandPrimary}
-          />
-          <Text
-            style={[
-              styles.verifiedFilterText,
-              verifiedOnly && styles.verifiedFilterTextActive,
-            ]}
-          >
-            Verificadas
-          </Text>
-        </Pressable>
+          <CheckCircle2 size={22} color={verifiedOnly ? "#FFFFFF" : colors.brandPrimary} />
+        </PressableScale>
       </View>
 
-      {/* [P0 MANDATORY] Category Chip Scroller: fixed 56pt row, 36pt chips, flexShrink: 0, no wrap */}
-      <View style={styles.categoryChipRowContainer}>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.categoryChipsContent}
-        >
-          <Pressable
-            testID="category-chip-all"
-            style={[
-              styles.categoryChip,
-              selectedCategory === "all" && styles.categoryChipSelected,
-            ]}
-            onPress={() => setSelectedCategory("all")}
-          >
-            <Sparkles
-              size={15}
-              color={selectedCategory === "all" ? "#FFFFFF" : colors.onSurfaceSecondary}
-            />
-            <Text
-              style={[
-                styles.categoryChipText,
-                selectedCategory === "all" && styles.categoryChipTextSelected,
-              ]}
+      <FlatList
+        data={stores}
+        keyExtractor={(item) => item.id}
+        contentContainerStyle={styles.listContent}
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefetching}
+            onRefresh={refetchStores}
+            tintColor={colors.brandPrimary}
+          />
+        }
+        ListHeaderComponent={
+          <>
+            {/* ===== Chunky category tiles (horizontal scroller) ===== */}
+            <View style={styles.sectionHeadRow}>
+              <Text style={styles.sectionTitle}>Categorias</Text>
+            </View>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.tilesContent}
             >
-              Todas
-            </Text>
-          </Pressable>
-
-          {categories.map((cat) => {
-            const IconComp = ICON_MAP[cat.icon] || Sparkles;
-            const isSelected = selectedCategory === cat.id;
-            return (
-              <Pressable
-                key={cat.id}
-                testID={`category-chip-${cat.id}`}
-                style={[
-                  styles.categoryChip,
-                  isSelected && styles.categoryChipSelected,
-                ]}
-                onPress={() => setSelectedCategory(cat.id)}
+              <PressableScale
+                testID="category-chip-all"
+                style={styles.catTile}
+                onPress={() => setSelectedCategory("all")}
               >
-                <IconComp
-                  size={15}
-                  color={isSelected ? "#FFFFFF" : colors.onSurfaceSecondary}
-                />
-                <Text
+                <View
                   style={[
-                    styles.categoryChipText,
-                    isSelected && styles.categoryChipTextSelected,
+                    styles.catTileIcon,
+                    { backgroundColor: colors.brandPrimary },
+                    selectedCategory === "all" && styles.catTileIconActiveRing,
                   ]}
                 >
-                  {cat.name.split(" & ")[0]}
-                </Text>
-              </Pressable>
-            );
-          })}
-        </ScrollView>
-      </View>
-
-      {/* Store Listings */}
-      {isLoadingStores ? (
-        <View style={styles.loadingContainer} testID="stores-loading">
-          <ActivityIndicator size="large" color={colors.brandPrimary} />
-          <Text style={styles.loadingText}>Buscando lojas da cidade...</Text>
-        </View>
-      ) : (
-        <FlatList
-          data={stores}
-          keyExtractor={(item) => item.id}
-          contentContainerStyle={styles.listContent}
-          showsVerticalScrollIndicator={false}
-          refreshControl={
-            <RefreshControl
-              refreshing={isRefetching}
-              onRefresh={refetchStores}
-              tintColor={colors.brandPrimary}
-            />
-          }
-          ListHeaderComponent={
-            <>
-              {/* Featured SaaS VIP Section (if 'all' or has featured) */}
-              {selectedCategory === "all" && featuredStores.length > 0 && !searchQuery && (
-                <View style={styles.featuredSection}>
-                  <View style={styles.sectionTitleRow}>
-                    <View style={styles.featuredBadge}>
-                      <Sparkles size={14} color="#FFFFFF" />
-                      <Text style={styles.featuredBadgeText}>DESTAQUES VIP DA CIDADE</Text>
-                    </View>
-                  </View>
-                  <ScrollView
-                    horizontal
-                    showsHorizontalScrollIndicator={false}
-                    contentContainerStyle={styles.featuredListContent}
-                  >
-                    {featuredStores.map((item) => (
-                      <Pressable
-                        key={`featured-${item.id}`}
-                        testID={`featured-card-${item.id}`}
-                        style={styles.featuredCard}
-                        onPress={() => router.push(`/store/${item.id}` as any)}
-                      >
-                        <Image
-                          source={{ uri: item.featured_banner_url || item.banner_url }}
-                          style={styles.featuredImage}
-                          contentFit="cover"
-                        />
-                        <View style={styles.featuredCardOverlay} />
-                        <View style={styles.featuredCardContent}>
-                          <View style={styles.featuredPill}>
-                            <Text style={styles.featuredPillText}>Patrocinado VIP</Text>
-                          </View>
-                          <Text style={styles.featuredStoreName} numberOfLines={1}>
-                            {item.name}
-                          </Text>
-                          <Text style={styles.featuredSub} numberOfLines={1}>
-                            {item.subcategory || item.category_name}
-                          </Text>
-                        </View>
-                      </Pressable>
-                    ))}
-                  </ScrollView>
+                  <Sparkles size={24} color="#FFFFFF" />
                 </View>
-              )}
-
-              {/* Title before the main list */}
-              <View style={styles.resultsTitleRow}>
-                <Text style={styles.resultsCountText}>
-                  {stores.length} {stores.length === 1 ? "loja encontrada" : "lojas encontradas"}
+                <Text
+                  style={[
+                    styles.catTileLabel,
+                    selectedCategory === "all" && styles.catTileLabelActive,
+                  ]}
+                  numberOfLines={1}
+                >
+                  Todas
                 </Text>
+              </PressableScale>
+
+              {categories.map((cat, idx) => {
+                const IconComp = ICON_MAP[cat.icon] || Sparkles;
+                const isSel = selectedCategory === cat.id;
+                return (
+                  <PressableScale
+                    key={cat.id}
+                    testID={`category-chip-${cat.id}`}
+                    style={styles.catTile}
+                    onPress={() => setSelectedCategory(isSel ? "all" : cat.id)}
+                  >
+                    <View
+                      style={[
+                        styles.catTileIcon,
+                        { backgroundColor: TILE_COLORS[idx % TILE_COLORS.length] },
+                        isSel && styles.catTileIconActiveRing,
+                      ]}
+                    >
+                      <IconComp
+                        size={24}
+                        color={TILE_ICON_COLORS[idx % TILE_ICON_COLORS.length]}
+                      />
+                    </View>
+                    <Text
+                      style={[styles.catTileLabel, isSel && styles.catTileLabelActive]}
+                      numberOfLines={1}
+                    >
+                      {cat.name.split(" & ")[0]}
+                    </Text>
+                  </PressableScale>
+                );
+              })}
+            </ScrollView>
+
+            {/* ===== VIP Featured carousel ===== */}
+            {selectedCategory === "all" && featuredStores.length > 0 && !searchQuery && (
+              <View style={styles.featuredSection}>
+                <View style={styles.sectionHeadRow}>
+                  <Text style={styles.sectionTitle}>Destaques VIP</Text>
+                  <View style={styles.vipDot}>
+                    <Sparkles size={13} color={colors.brandPrimary} />
+                  </View>
+                </View>
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={styles.featuredContent}
+                >
+                  {featuredStores.map((item) => (
+                    <PressableScale
+                      key={`featured-${item.id}`}
+                      testID={`featured-card-${item.id}`}
+                      style={styles.featuredCard}
+                      onPress={() => router.push(`/store/${item.id}` as any)}
+                    >
+                      <Image
+                        source={{ uri: item.featured_banner_url || item.banner_url }}
+                        style={StyleSheet.absoluteFill}
+                        contentFit="cover"
+                        transition={200}
+                      />
+                      <View style={styles.featuredScrim} />
+                      <View style={styles.featuredPill}>
+                        <Text style={styles.featuredPillText}>PATROCINADO</Text>
+                      </View>
+                      <View style={styles.featuredBottom}>
+                        <Text style={styles.featuredName} numberOfLines={1}>
+                          {item.name}
+                        </Text>
+                        <Text style={styles.featuredSub} numberOfLines={1}>
+                          {item.subcategory || item.category_name}
+                        </Text>
+                      </View>
+                    </PressableScale>
+                  ))}
+                </ScrollView>
               </View>
-            </>
-          }
-          renderItem={({ item }) => (
-            <StoreCard
-              store={item}
-              isFavorite={user?.saved_stores?.includes(item.id)}
-              onToggleFavorite={handleToggleFavorite}
-            />
-          )}
-          ListEmptyComponent={
+            )}
+
+            {/* ===== Results header ===== */}
+            <View style={styles.resultsRow}>
+              <Text style={styles.sectionTitle}>
+                {selectedCategory === "all" && !searchQuery
+                  ? "Lojas na cidade"
+                  : "Resultados"}
+              </Text>
+              <Text style={styles.resultsCount}>
+                {stores.length} {stores.length === 1 ? "loja" : "lojas"}
+              </Text>
+            </View>
+          </>
+        }
+        renderItem={({ item }) => (
+          <StoreCard
+            store={item}
+            isFavorite={user?.saved_stores?.includes(item.id)}
+            onToggleFavorite={handleToggleFavorite}
+          />
+        )}
+        ListEmptyComponent={
+          isLoadingStores ? (
+            <View style={styles.skeletonWrap} testID="stores-loading">
+              {[1, 2, 3].map((k) => (
+                <View key={k} style={styles.skeletonCard}>
+                  <View style={styles.skeletonBanner} />
+                  <View style={styles.skeletonLineWide} />
+                  <View style={styles.skeletonLine} />
+                </View>
+              ))}
+            </View>
+          ) : (
             <View style={styles.emptyContainer} testID="stores-empty">
               <View style={styles.emptyIconCircle}>
-                <Search size={32} color={colors.muted} />
+                <Search size={30} color={colors.brandPrimary} />
               </View>
               <Text style={styles.emptyTitle}>Nenhuma loja encontrada</Text>
               <Text style={styles.emptySubtitle}>
-                Tente buscar por outro termo ou selecione uma categoria diferente.
+                Tente outro termo ou toque em uma categoria diferente.
               </Text>
-              <Pressable
+              <PressableScale
                 testID="reset-filters-btn"
-                style={styles.resetFiltersBtn}
+                style={styles.resetBtn}
                 onPress={() => {
                   setSearchQuery("");
                   setSelectedCategory("all");
                   setVerifiedOnly(false);
                 }}
               >
-                <Text style={styles.resetFiltersText}>Limpar Filtros</Text>
-              </Pressable>
+                <Text style={styles.resetBtnText}>Limpar filtros</Text>
+              </PressableScale>
             </View>
-          }
-        />
-      )}
+          )
+        }
+      />
 
-      {/* Role Switcher Modal */}
       <RoleSwitcherModal
         visible={isRoleModalVisible}
         onClose={() => setIsRoleModalVisible(false)}
@@ -323,225 +361,283 @@ const useStyles = makeStyles((colors) => ({
     flex: 1,
     backgroundColor: colors.surface,
   },
-  searchHeader: {
+  hero: {
+    backgroundColor: colors.surfaceInverse,
+    paddingHorizontal: 20,
+    paddingBottom: 40,
+    borderBottomLeftRadius: 28,
+    borderBottomRightRadius: 28,
+  },
+  heroTopRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: 12,
+  },
+  heroGreeting: {
+    fontSize: 24,
+    fontWeight: "800",
+    color: colors.onSurfaceInverse,
+    letterSpacing: -0.4,
+  },
+  heroTagline: {
+    fontSize: 14,
+    color: "rgba(255,255,255,0.65)",
+    marginTop: 3,
+  },
+  rolePill: {
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    gap: 8,
-    backgroundColor: colors.surface,
+    gap: 5,
+    backgroundColor: "rgba(255,255,255,0.12)",
+    paddingHorizontal: 12,
+    height: 38,
+    borderRadius: 999,
   },
-  searchBarContainer: {
+  rolePillText: {
+    color: colors.brandTertiary,
+    fontSize: 13,
+    fontWeight: "800",
+  },
+  locationRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
+    marginTop: 16,
+  },
+  locationText: {
+    color: "rgba(255,255,255,0.8)",
+    fontSize: 13,
+    fontWeight: "600",
+  },
+  searchFloatWrap: {
+    flexDirection: "row",
+    gap: 10,
+    paddingHorizontal: 20,
+    marginTop: -26,
+  },
+  searchBar: {
     flex: 1,
     flexDirection: "row",
     alignItems: "center",
+    gap: 10,
     backgroundColor: colors.surfaceSecondary,
-    borderWidth: 1,
+    borderRadius: 16,
+    borderWidth: 2,
     borderColor: colors.border,
-    borderRadius: 12,
-    paddingHorizontal: 12,
-    height: 44,
-    gap: 8,
+    paddingHorizontal: 14,
+    height: 54,
+    ...TACTILE_CARD,
   },
   searchInput: {
     flex: 1,
-    fontSize: 14,
+    fontSize: 15,
     color: colors.onSurface,
     height: "100%",
   },
-  clearSearchBtn: {
-    padding: 4,
-  },
-  verifiedFilterBtn: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-    height: 44,
-    paddingHorizontal: 12,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: colors.brandPrimary,
-    backgroundColor: colors.surface,
-  },
-  verifiedFilterBtnActive: {
-    backgroundColor: colors.brandPrimary,
-  },
-  verifiedFilterText: {
-    fontSize: 12,
-    fontWeight: "700",
-    color: colors.brandPrimary,
-  },
-  verifiedFilterTextActive: {
-    color: "#FFFFFF",
-  },
-  // [P0] Category Chip Row: Fixed 56pt height, 36pt chip height, flexShrink: 0
-  categoryChipRowContainer: {
-    height: 56,
-    backgroundColor: colors.surface,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.divider,
-    justifyContent: "center",
-  },
-  categoryChipsContent: {
-    paddingHorizontal: 16,
-    alignItems: "center",
-    gap: 8,
-  },
-  categoryChip: {
-    height: 36,
-    flexShrink: 0,
-    flexDirection: "row",
-    alignItems: "center",
+  verifiedBtn: {
+    width: 54,
+    height: 54,
+    borderRadius: 16,
     backgroundColor: colors.surfaceSecondary,
-    borderWidth: 1,
-    borderColor: colors.border,
-    paddingHorizontal: 14,
-    borderRadius: 18,
-    gap: 6,
-  },
-  categoryChipSelected: {
-    backgroundColor: colors.brandPrimary,
+    borderWidth: 2,
     borderColor: colors.brandPrimary,
+    alignItems: "center",
+    justifyContent: "center",
+    ...TACTILE_CARD,
   },
-  categoryChipText: {
-    fontSize: 13,
-    fontWeight: "600",
-    color: colors.onSurfaceSecondary,
-  },
-  categoryChipTextSelected: {
-    color: "#FFFFFF",
-    fontWeight: "700",
+  verifiedBtnActive: {
+    backgroundColor: colors.brandPrimary,
   },
   listContent: {
-    paddingHorizontal: 16,
-    paddingTop: 12,
-    paddingBottom: 24,
+    paddingHorizontal: 20,
+    paddingTop: 22,
+    paddingBottom: 28,
+  },
+  sectionHeadRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    marginBottom: 14,
+  },
+  sectionTitle: {
+    fontSize: 19,
+    fontWeight: "800",
+    color: colors.onSurface,
+    letterSpacing: -0.3,
+  },
+  vipDot: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: colors.brandTertiary,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  tilesContent: {
+    gap: 16,
+    paddingRight: 8,
+    paddingBottom: 6,
+  },
+  catTile: {
+    width: 68,
+    alignItems: "center",
+    gap: 7,
+  },
+  catTileIcon: {
+    width: 62,
+    height: 62,
+    borderRadius: 20,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 2,
+    borderColor: "transparent",
+    ...TACTILE_CARD,
+  },
+  catTileIconActiveRing: {
+    borderColor: colors.onSurface,
+  },
+  catTileLabel: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: colors.onSurfaceTertiary,
+  },
+  catTileLabelActive: {
+    color: colors.onSurface,
+    fontWeight: "800",
   },
   featuredSection: {
-    marginBottom: 20,
+    marginTop: 26,
   },
-  sectionTitleRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 10,
-  },
-  featuredBadge: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-    backgroundColor: colors.brandPrimary,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 8,
-  },
-  featuredBadgeText: {
-    color: "#FFFFFF",
-    fontSize: 11,
-    fontWeight: "800",
-    letterSpacing: 0.5,
-  },
-  featuredListContent: {
-    gap: 12,
+  featuredContent: {
+    gap: 14,
+    paddingRight: 8,
+    paddingBottom: 6,
   },
   featuredCard: {
-    width: 240,
-    height: 130,
-    borderRadius: 14,
+    width: 260,
+    height: 150,
+    borderRadius: 20,
     overflow: "hidden",
-    position: "relative",
     backgroundColor: colors.surfaceTertiary,
+    borderWidth: 2,
+    borderColor: colors.borderStrong,
   },
-  featuredImage: {
-    width: "100%",
-    height: "100%",
-  },
-  featuredCardOverlay: {
+  featuredScrim: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(0,0,0,0.4)",
-  },
-  featuredCardContent: {
-    position: "absolute",
-    bottom: 10,
-    left: 12,
-    right: 12,
+    backgroundColor: "rgba(28,25,23,0.42)",
   },
   featuredPill: {
-    alignSelf: "flex-start",
+    position: "absolute",
+    top: 12,
+    left: 12,
     backgroundColor: colors.brandPrimary,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 4,
-    marginBottom: 4,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
   },
   featuredPillText: {
     color: "#FFFFFF",
     fontSize: 9,
-    fontWeight: "700",
+    fontWeight: "800",
+    letterSpacing: 0.6,
   },
-  featuredStoreName: {
+  featuredBottom: {
+    position: "absolute",
+    bottom: 14,
+    left: 14,
+    right: 14,
+  },
+  featuredName: {
     color: "#FFFFFF",
-    fontSize: 15,
+    fontSize: 18,
     fontWeight: "800",
   },
   featuredSub: {
-    color: "rgba(255,255,255,0.85)",
-    fontSize: 12,
-  },
-  resultsTitleRow: {
-    marginBottom: 10,
-  },
-  resultsCountText: {
+    color: "rgba(255,255,255,0.88)",
     fontSize: 13,
-    fontWeight: "600",
-    color: colors.muted,
+    marginTop: 1,
   },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: "center",
+  resultsRow: {
+    flexDirection: "row",
     alignItems: "center",
-    gap: 12,
+    justifyContent: "space-between",
+    marginTop: 26,
+    marginBottom: 16,
   },
-  loadingText: {
-    fontSize: 14,
+  resultsCount: {
+    fontSize: 13,
+    fontWeight: "700",
     color: colors.muted,
+  },
+  skeletonWrap: {
+    gap: 18,
+  },
+  skeletonCard: {
+    backgroundColor: colors.surfaceSecondary,
+    borderRadius: 20,
+    borderWidth: 2,
+    borderColor: colors.border,
+    padding: 12,
+    gap: 10,
+  },
+  skeletonBanner: {
+    height: 130,
+    borderRadius: 14,
+    backgroundColor: colors.surfaceTertiary,
+  },
+  skeletonLineWide: {
+    height: 16,
+    width: "70%",
+    borderRadius: 8,
+    backgroundColor: colors.surfaceTertiary,
+  },
+  skeletonLine: {
+    height: 12,
+    width: "45%",
+    borderRadius: 6,
+    backgroundColor: colors.surfaceTertiary,
   },
   emptyContainer: {
     alignItems: "center",
     justifyContent: "center",
-    paddingVertical: 48,
-    paddingHorizontal: 24,
+    paddingVertical: 40,
+    paddingHorizontal: 20,
   },
   emptyIconCircle: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    backgroundColor: colors.surfaceTertiary,
+    width: 72,
+    height: 72,
+    borderRadius: 24,
+    backgroundColor: colors.brandTertiary,
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 16,
+    marginBottom: 18,
   },
   emptyTitle: {
-    fontSize: 17,
-    fontWeight: "700",
+    fontSize: 18,
+    fontWeight: "800",
     color: colors.onSurface,
     marginBottom: 6,
   },
   emptySubtitle: {
-    fontSize: 13,
+    fontSize: 14,
     color: colors.muted,
     textAlign: "center",
-    lineHeight: 18,
-    marginBottom: 16,
+    lineHeight: 20,
+    marginBottom: 20,
   },
-  resetFiltersBtn: {
+  resetBtn: {
     backgroundColor: colors.brandPrimary,
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 10,
+    paddingHorizontal: 24,
+    height: 50,
+    borderRadius: 16,
+    alignItems: "center",
+    justifyContent: "center",
+    borderBottomWidth: 4,
+    borderBottomColor: INK,
   },
-  resetFiltersText: {
+  resetBtnText: {
     color: "#FFFFFF",
-    fontSize: 13,
-    fontWeight: "700",
+    fontSize: 15,
+    fontWeight: "800",
   },
 }));

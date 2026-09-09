@@ -9,40 +9,62 @@ export type ColorScheme = "light" | "dark";
 const light = {
   // Surfaces: backgrounds, from the screen down to small fills.
   surface: "#F9F8F6",
-  onSurface: "#1C1C1E",
+  onSurface: "#1C1917",
   surfaceSecondary: "#FFFFFF",
-  onSurfaceSecondary: "#1C1C1E",
-  surfaceTertiary: "#F0EFEA",
-  onSurfaceTertiary: "#3A3A3C",
-  surfaceInverse: "#1C1C1E",
-  onSurfaceInverse: "#F9F8F6",
-  muted: "#68686C",
+  onSurfaceSecondary: "#1C1917",
+  surfaceTertiary: "#F5F5F5",
+  onSurfaceTertiary: "#374151",
+  surfaceInverse: "#1C1917",
+  onSurfaceInverse: "#FFFFFF",
+  muted: "#78716C",
 
   // Brand: Warm Ochre & Amber palette
   brand: "#D97706",
   onBrand: "#FFFFFF",
   brandPrimary: "#B45309",
   onBrandPrimary: "#FFFFFF",
-  brandSecondary: "#92400E",
+  brandSecondary: "#D97706",
   onBrandSecondary: "#FFFFFF",
   brandTertiary: "#FEF3C7",
-  onBrandTertiary: "#78350F",
+  onBrandTertiary: "#B45309",
 
   // Semantic Status
-  success: "#047857",
+  success: "#16A34A",
   onSuccess: "#FFFFFF",
-  warning: "#B45309",
+  warning: "#D97706",
   onWarning: "#FFFFFF",
-  error: "#B91C1C",
+  error: "#DC2626",
   onError: "#FFFFFF",
-  info: "#1D4ED8",
+  info: "#2563EB",
   onInfo: "#FFFFFF",
 
   // Lines
-  border: "#E5E5EA",
-  borderStrong: "#C7C7CC",
-  divider: "#EFEFF4",
+  border: "#E7E5E4",
+  borderStrong: "#D6D3D1",
+  divider: "#E7E5E4",
 };
+
+// Duolingo-style tactile "sticker" depth. Dark ink shadow stays identical in
+// both schemes, so these literals are intentional.
+export const INK = "#1C1917";
+
+// Solid offset shadow for chunky cards / buttons (iOS + web). Android falls
+// back to elevation. Pair with a thicker bottom border for the 3D block feel.
+export const TACTILE_CARD = {
+  shadowColor: INK,
+  shadowOffset: { width: 0, height: 4 },
+  shadowOpacity: 0.12,
+  shadowRadius: 12,
+  elevation: 3,
+} as const;
+
+export const TACTILE_BLOCK = {
+  shadowColor: INK,
+  shadowOffset: { width: 0, height: 6 },
+  shadowOpacity: 1,
+  shadowRadius: 0,
+  elevation: 6,
+} as const;
 
 export type ThemeColors = typeof light;
 
