@@ -25,7 +25,8 @@ import {
   Check,
 } from "lucide-react-native";
 import { useTheme, makeStyles } from "@/src/theme";
-import { api } from "@/src/api";
+import { ImagePickerField } from "@/src/components/ImagePickerField";
+import { api, resolveMediaUrl } from "@/src/api";
 import { Product, Store } from "@/src/types";
 
 export default function OwnerCatalogScreen() {
@@ -152,15 +153,15 @@ export default function OwnerCatalogScreen() {
   const planLimit = activeStore?.plan_tier === "premium" ? 100 : activeStore?.plan_tier === "pro" ? 25 : 5;
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top }]}>
+    <View style={styles.container}>
       {/* Header */}
-      <View style={styles.headerBar}>
+      <View style={[styles.headerBar, { paddingTop: insets.top + 10 }]}>
         <Pressable
           testID="catalog-back-btn"
           style={styles.backBtn}
           onPress={() => router.back()}
         >
-          <ArrowLeft size={20} color={colors.onSurface} />
+          <ArrowLeft size={20} color="#FFFFFF" />
         </Pressable>
         <Text style={styles.headerTitle}>Catálogo & Cardápio</Text>
         <Pressable
@@ -235,7 +236,7 @@ export default function OwnerCatalogScreen() {
                 testID={`product-row-${item.id}`}
               >
                 <Image
-                  source={{ uri: item.image_url }}
+                  source={{ uri: resolveMediaUrl(item.image_url) }}
                   style={styles.productThumb}
                   contentFit="cover"
                 />
@@ -363,15 +364,13 @@ export default function OwnerCatalogScreen() {
                 />
               </View>
 
-              <View style={styles.inputGroup}>
-                <Text style={styles.inputLabel}>URL da Imagem</Text>
-                <TextInput
-                  testID="product-image-input"
-                  style={styles.modalInput}
-                  value={prodImageUrl}
-                  onChangeText={setProdImageUrl}
-                />
-              </View>
+              <ImagePickerField
+                label="Foto do Produto"
+                value={prodImageUrl}
+                onChange={setProdImageUrl}
+                aspect="square"
+                testID="product-image-picker"
+              />
 
               <View style={styles.switchRow}>
                 <Text style={styles.switchLabel}>Disponível para Pedidos</Text>
@@ -414,23 +413,23 @@ const useStyles = makeStyles((colors) => ({
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.divider,
-    backgroundColor: colors.surface,
+    paddingBottom: 16,
+    backgroundColor: colors.surfaceInverse,
+    borderBottomLeftRadius: 24,
+    borderBottomRightRadius: 24,
   },
   backBtn: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: colors.surfaceSecondary,
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: "rgba(255,255,255,0.12)",
     justifyContent: "center",
     alignItems: "center",
   },
   headerTitle: {
     fontSize: 16,
-    fontWeight: "700",
-    color: colors.onSurface,
+    fontWeight: "800",
+    color: "#FFFFFF",
   },
   addBtn: {
     flexDirection: "row",

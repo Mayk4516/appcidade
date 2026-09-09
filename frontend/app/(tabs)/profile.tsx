@@ -1,10 +1,5 @@
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  ScrollView,
-  Pressable,
-} from "react-native";
+import { View, Text, ScrollView, Pressable } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import {
@@ -12,16 +7,27 @@ import {
   Store,
   Shield,
   CreditCard,
-  Layers,
-  Sparkles,
+  Heart,
   LogOut,
   ChevronRight,
-  Info,
+  MapPin,
   RefreshCw,
 } from "lucide-react-native";
-import { useTheme, makeStyles } from "@/src/theme";
+import { useTheme, makeStyles, INK, TACTILE_CARD } from "@/src/theme";
+import { PressableScale } from "@/src/components/PressableScale";
+import { AnimatedItem } from "@/src/components/AnimatedItem";
 import { useAuth } from "@/src/context/AuthContext";
 import { RoleSwitcherModal } from "@/src/components/RoleSwitcherModal";
+
+interface MenuEntry {
+  testID: string;
+  title: string;
+  subtitle: string;
+  icon: any;
+  bg: string;
+  fg: string;
+  onPress: () => void;
+}
 
 export default function ProfileScreen() {
   const insets = useSafeAreaInsets();
@@ -32,186 +38,165 @@ export default function ProfileScreen() {
   const [isRoleModalVisible, setIsRoleModalVisible] = useState(false);
 
   const getRoleInfo = () => {
-    if (user?.role === "super_admin") {
-      return {
-        name: "Super Administrador",
-        tag: "Governança da Plataforma",
-        color: "#4338CA",
-        bg: "#EEF2FF",
-        icon: Shield,
-      };
-    }
-    if (user?.role === "store_owner") {
-      return {
-        name: "Lojista & Comerciante",
-        tag: "Plano SaaS Ativo",
-        color: colors.brandPrimary,
-        bg: colors.brandTertiary,
-        icon: Store,
-      };
-    }
-    return {
-      name: "Consumidor Local",
-      tag: "Conta Pessoal",
-      color: "#047857",
-      bg: "#ECFDF5",
-      icon: User,
-    };
+    if (user?.role === "super_admin")
+      return { name: "Super Administrador", tag: "Governança", color: "#C7D2FE", icon: Shield };
+    if (user?.role === "store_owner")
+      return { name: "Lojista", tag: "Conta comercial", color: colors.brandTertiary, icon: Store };
+    return { name: "Consumidor", tag: "Conta pessoal", color: "#BBF7D0", icon: User };
   };
-
   const roleInfo = getRoleInfo();
 
+  // Role-scoped menu: each role only sees what belongs to it.
+  const menu: MenuEntry[] = [];
+  if (user?.role === "store_owner") {
+    menu.push(
+      {
+        testID: "profile-goto-owner-dashboard-btn",
+        title: "Painel do Lojista",
+        subtitle: "Métricas, leads no WhatsApp e catálogo",
+        icon: Store,
+        bg: colors.brandTertiary,
+        fg: colors.brandPrimary,
+        onPress: () => router.push("/owner/dashboard" as any),
+      },
+      {
+        testID: "profile-goto-plans-btn",
+        title: "Planos & Destaques VIP",
+        subtitle: "Grátis, Pro e Premium com banner",
+        icon: CreditCard,
+        bg: "#FEF3C7",
+        fg: "#B45309",
+        onPress: () => router.push("/owner/plans" as any),
+      },
+    );
+  } else if (user?.role === "super_admin") {
+    menu.push({
+      testID: "profile-goto-admin-btn",
+      title: "Console Super Admin",
+      subtitle: "Governança da cidade, MRR e moderação",
+      icon: Shield,
+      bg: "#EEF2FF",
+      fg: "#4338CA",
+      onPress: () => router.push("/admin/dashboard" as any),
+    });
+  } else {
+    // Consumer-only shortcuts
+    menu.push({
+      testID: "profile-goto-favorites-btn",
+      title: "Minhas Lojas Favoritas",
+      subtitle: "Acesse rapidamente o que você salvou",
+      icon: Heart,
+      bg: "#FFE4E6",
+      fg: "#BE123C",
+      onPress: () => router.push("/(tabs)/favorites" as any),
+    });
+  }
+
   return (
-    <View style={[styles.container, { paddingTop: insets.top }]}>
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-      >
-        {/* User Card */}
-        <View style={styles.userCard}>
-          <View style={styles.userAvatarContainer}>
-            <View style={[styles.avatarCircle, { backgroundColor: roleInfo.bg }]}>
-              <roleInfo.icon size={28} color={roleInfo.color} />
-            </View>
+    <View style={styles.container}>
+      {/* Dark hero header (same language as Home) */}
+      <View style={[styles.hero, { paddingTop: insets.top + 18 }]}>
+        <Text style={styles.heroLabel}>PERFIL</Text>
+        <View style={styles.heroUserRow}>
+          <View style={[styles.avatarCircle, { backgroundColor: roleInfo.color }]}>
+            <roleInfo.icon size={26} color={INK} />
           </View>
-          <View style={styles.userInfo}>
-            <Text style={styles.userName}>
-              {user ? user.name : "Visitante Não Autenticado"}
+          <View style={{ flex: 1 }}>
+            <Text style={styles.userName} numberOfLines={1}>
+              {user ? user.name : "Visitante"}
             </Text>
-            <Text style={styles.userEmail}>
-              {user ? user.email : "Entre para salvar favoritos e acessar seu painel"}
+            <Text style={styles.userEmail} numberOfLines={1}>
+              {user ? user.email : "Entre para salvar favoritos"}
             </Text>
-            {user && (
-              <View style={[styles.roleBadge, { backgroundColor: roleInfo.bg }]}>
-                <Text style={[styles.roleBadgeText, { color: roleInfo.color }]}>
-                  {roleInfo.tag}
-                </Text>
-              </View>
-            )}
           </View>
         </View>
-
-        {/* 1-Tap Role Switcher Banner */}
-        <Pressable
-          testID="profile-open-role-switcher-btn"
-          style={styles.switcherBanner}
-          onPress={() => setIsRoleModalVisible(true)}
-        >
-          <View style={styles.switcherLeft}>
-            <View style={styles.switcherIconCircle}>
-              <RefreshCw size={18} color={colors.brandPrimary} />
-            </View>
-            <View>
-              <Text style={styles.switcherTitle}>Alternar Modo do App</Text>
-              <Text style={styles.switcherSubtitle}>
-                Trocar entre Consumidor, Lojista e Super Admin
-              </Text>
-            </View>
-          </View>
-          <ChevronRight size={18} color={colors.brandPrimary} />
-        </Pressable>
-
-        {/* Portal Shortcuts Section */}
-        <Text style={styles.sectionTitle}>PAINÉIS & RECURSOS SAAS</Text>
-
-        {/* Lojista Dashboard Button */}
-        <Pressable
-          testID="profile-goto-owner-dashboard-btn"
-          style={styles.menuItem}
-          onPress={() => router.push("/owner/dashboard" as any)}
-        >
-          <View style={[styles.menuIconCircle, { backgroundColor: colors.brandTertiary }]}>
-            <Store size={20} color={colors.brandPrimary} />
-          </View>
-          <View style={styles.menuContent}>
-            <Text style={styles.menuTitle}>Painel do Lojista</Text>
-            <Text style={styles.menuSubtitle}>
-              Métricas de visitas, leads no WhatsApp e catálogo
+        {user && (
+          <View style={styles.roleBadge}>
+            <Text style={styles.roleBadgeText}>
+              {roleInfo.name} • {roleInfo.tag}
             </Text>
           </View>
-          <ChevronRight size={18} color={colors.muted} />
-        </Pressable>
+        )}
+      </View>
 
-        {/* SaaS Plans & Upgrades */}
-        <Pressable
-          testID="profile-goto-plans-btn"
-          style={styles.menuItem}
-          onPress={() => router.push("/owner/plans" as any)}
-        >
-          <View style={[styles.menuIconCircle, { backgroundColor: "#FEF3C7" }]}>
-            <CreditCard size={20} color="#B45309" />
-          </View>
-          <View style={styles.menuContent}>
-            <Text style={styles.menuTitle}>Planos SaaS & Destaques VIP</Text>
-            <Text style={styles.menuSubtitle}>
-              Planos Grátis, Pro e Premium VIP com banner
+      <ScrollView
+        contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 32 }]}
+        showsVerticalScrollIndicator={false}
+      >
+        {menu.length > 0 && (
+          <>
+            <Text style={styles.sectionTitle}>
+              {user?.role === "store_owner" || user?.role === "super_admin"
+                ? "SEU PAINEL"
+                : "ATALHOS"}
             </Text>
-          </View>
-          <ChevronRight size={18} color={colors.muted} />
-        </Pressable>
+            {menu.map((m, i) => (
+              <AnimatedItem key={m.testID} index={i}>
+                <PressableScale testID={m.testID} style={styles.menuItem} onPress={m.onPress}>
+                  <View style={[styles.menuIconCircle, { backgroundColor: m.bg }]}>
+                    <m.icon size={20} color={m.fg} />
+                  </View>
+                  <View style={styles.menuContent}>
+                    <Text style={styles.menuTitle}>{m.title}</Text>
+                    <Text style={styles.menuSubtitle}>{m.subtitle}</Text>
+                  </View>
+                  <ChevronRight size={18} color={colors.muted} />
+                </PressableScale>
+              </AnimatedItem>
+            ))}
+          </>
+        )}
 
-        {/* Super Admin Console */}
-        <Pressable
-          testID="profile-goto-admin-btn"
-          style={styles.menuItem}
-          onPress={() => router.push("/admin/dashboard" as any)}
-        >
-          <View style={[styles.menuIconCircle, { backgroundColor: "#EEF2FF" }]}>
-            <Shield size={20} color="#4338CA" />
-          </View>
-          <View style={styles.menuContent}>
-            <Text style={styles.menuTitle}>Console Super Admin</Text>
-            <Text style={styles.menuSubtitle}>
-              Governança da cidade, MRR e moderação de lojas
-            </Text>
-          </View>
-          <ChevronRight size={18} color={colors.muted} />
-        </Pressable>
-
-        {/* App Info Section */}
         <Text style={styles.sectionTitle}>SOBRE O APLICATIVO</Text>
         <View style={styles.infoCard}>
           <View style={styles.infoRow}>
-            <Text style={styles.infoLabel}>Versão do App</Text>
-            <Text style={styles.infoValue}>1.0.0 (UrbanPulse Hub 2026)</Text>
+            <Text style={styles.infoLabel}>Versão</Text>
+            <Text style={styles.infoValue}>1.0.0</Text>
           </View>
           <View style={styles.infoDivider} />
           <View style={styles.infoRow}>
-            <Text style={styles.infoLabel}>Cidade Operacional</Text>
+            <View style={styles.infoLabelRow}>
+              <MapPin size={14} color={colors.muted} />
+              <Text style={styles.infoLabel}>Cidade</Text>
+            </View>
             <Text style={styles.infoValue}>São Paulo, SP</Text>
-          </View>
-          <View style={styles.infoDivider} />
-          <View style={styles.infoRow}>
-            <Text style={styles.infoLabel}>Modelo de Negócios</Text>
-            <Text style={styles.infoValue}>SaaS Local + Destaques VIP</Text>
           </View>
         </View>
 
-        {/* Auth Action (Login / Logout) */}
         {user ? (
-          <Pressable
+          <PressableScale
             testID="profile-logout-btn"
             style={styles.logoutBtn}
             onPress={async () => {
               await logout();
-              router.push("/" as any);
+              router.replace("/" as any);
             }}
           >
-            <LogOut size={18} color="#EF4444" />
+            <LogOut size={18} color={colors.error} />
             <Text style={styles.logoutBtnText}>Sair da Conta</Text>
-          </Pressable>
+          </PressableScale>
         ) : (
-          <Pressable
+          <PressableScale
             testID="profile-login-btn"
             style={styles.loginActionBtn}
+            haptic="medium"
             onPress={() => router.push("/auth/login" as any)}
           >
             <Text style={styles.loginActionBtnText}>Fazer Login / Cadastrar</Text>
-          </Pressable>
+          </PressableScale>
         )}
+
+        {/* Discreet demo-only role switcher */}
+        <Pressable
+          testID="profile-open-role-switcher-btn"
+          style={styles.demoSwitch}
+          onPress={() => setIsRoleModalVisible(true)}
+        >
+          <RefreshCw size={12} color={colors.muted} />
+          <Text style={styles.demoSwitchText}>Modo demonstração · alternar perfil</Text>
+        </Pressable>
       </ScrollView>
 
-      {/* Role Switcher Modal */}
       <RoleSwitcherModal
         visible={isRoleModalVisible}
         onClose={() => setIsRoleModalVisible(false)}
@@ -225,110 +210,84 @@ const useStyles = makeStyles((colors) => ({
     flex: 1,
     backgroundColor: colors.surface,
   },
-  scrollContent: {
-    paddingHorizontal: 16,
-    paddingTop: 16,
-    paddingBottom: 40,
+  hero: {
+    backgroundColor: colors.surfaceInverse,
+    paddingHorizontal: 20,
+    paddingBottom: 22,
+    borderBottomLeftRadius: 28,
+    borderBottomRightRadius: 28,
   },
-  userCard: {
+  heroLabel: {
+    fontSize: 12,
+    fontWeight: "800",
+    color: "rgba(255,255,255,0.5)",
+    letterSpacing: 1,
+    marginBottom: 14,
+  },
+  heroUserRow: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: colors.surfaceSecondary,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 18,
-    padding: 16,
-    marginBottom: 16,
     gap: 14,
   },
-  userAvatarContainer: {},
   avatarCircle: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
+    width: 58,
+    height: 58,
+    borderRadius: 20,
     justifyContent: "center",
     alignItems: "center",
   },
-  userInfo: {
-    flex: 1,
-  },
   userName: {
-    fontSize: 17,
-    fontWeight: "700",
-    color: colors.onSurfaceSecondary,
-    marginBottom: 2,
+    fontSize: 22,
+    fontWeight: "800",
+    color: "#FFFFFF",
+    letterSpacing: -0.4,
   },
   userEmail: {
-    fontSize: 12,
-    color: colors.muted,
-    marginBottom: 6,
+    fontSize: 13,
+    color: "rgba(255,255,255,0.65)",
+    marginTop: 2,
   },
   roleBadge: {
     alignSelf: "flex-start",
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 6,
+    backgroundColor: "rgba(255,255,255,0.12)",
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 999,
+    marginTop: 14,
   },
   roleBadgeText: {
-    fontSize: 11,
+    fontSize: 12,
     fontWeight: "700",
+    color: colors.brandTertiary,
   },
-  switcherBanner: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    backgroundColor: "#FFFDF6",
-    borderWidth: 1.5,
-    borderColor: colors.brand,
-    borderRadius: 16,
-    padding: 14,
-    marginBottom: 24,
-  },
-  switcherLeft: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-    flex: 1,
-  },
-  switcherIconCircle: {
-    width: 36,
-    height: 36,
-    borderRadius: 10,
-    backgroundColor: colors.brandTertiary,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  switcherTitle: {
-    fontSize: 14,
-    fontWeight: "700",
-    color: colors.brandPrimary,
-  },
-  switcherSubtitle: {
-    fontSize: 11,
-    color: colors.muted,
+  scrollContent: {
+    paddingHorizontal: 20,
+    paddingTop: 22,
   },
   sectionTitle: {
     fontSize: 12,
-    fontWeight: "700",
+    fontWeight: "800",
     color: colors.muted,
     letterSpacing: 0.8,
-    marginBottom: 10,
+    marginBottom: 12,
+    marginTop: 8,
   },
   menuItem: {
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: colors.surfaceSecondary,
-    borderWidth: 1,
+    borderWidth: 2,
     borderColor: colors.border,
-    borderRadius: 14,
+    borderRadius: 18,
     padding: 14,
-    marginBottom: 10,
+    marginBottom: 12,
     gap: 12,
+    ...TACTILE_CARD,
   },
   menuIconCircle: {
-    width: 42,
-    height: 42,
-    borderRadius: 12,
+    width: 46,
+    height: 46,
+    borderRadius: 14,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -336,22 +295,23 @@ const useStyles = makeStyles((colors) => ({
     flex: 1,
   },
   menuTitle: {
-    fontSize: 14,
-    fontWeight: "700",
-    color: colors.onSurfaceSecondary,
+    fontSize: 15,
+    fontWeight: "800",
+    color: colors.onSurface,
     marginBottom: 2,
   },
   menuSubtitle: {
-    fontSize: 11,
+    fontSize: 12,
     color: colors.muted,
   },
   infoCard: {
     backgroundColor: colors.surfaceSecondary,
-    borderWidth: 1,
+    borderWidth: 2,
     borderColor: colors.border,
-    borderRadius: 14,
-    padding: 14,
-    marginBottom: 24,
+    borderRadius: 18,
+    padding: 16,
+    marginBottom: 22,
+    ...TACTILE_CARD,
   },
   infoRow: {
     flexDirection: "row",
@@ -359,43 +319,66 @@ const useStyles = makeStyles((colors) => ({
     alignItems: "center",
     paddingVertical: 6,
   },
+  infoLabelRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+  },
   infoLabel: {
-    fontSize: 13,
+    fontSize: 14,
     color: colors.muted,
   },
   infoValue: {
-    fontSize: 13,
-    fontWeight: "600",
-    color: colors.onSurfaceSecondary,
+    fontSize: 14,
+    fontWeight: "700",
+    color: colors.onSurface,
   },
   infoDivider: {
     height: 1,
     backgroundColor: colors.divider,
-    marginVertical: 4,
+    marginVertical: 6,
   },
   logoutBtn: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "#FEE2E2",
-    paddingVertical: 14,
-    borderRadius: 12,
+    height: 54,
+    borderRadius: 16,
     gap: 8,
+    borderBottomWidth: 4,
+    borderBottomColor: "#FCA5A5",
   },
   logoutBtnText: {
-    color: "#EF4444",
-    fontSize: 14,
-    fontWeight: "700",
+    color: colors.error,
+    fontSize: 15,
+    fontWeight: "800",
   },
   loginActionBtn: {
     backgroundColor: colors.brandPrimary,
-    paddingVertical: 14,
-    borderRadius: 12,
+    height: 56,
+    borderRadius: 18,
     alignItems: "center",
+    justifyContent: "center",
+    borderBottomWidth: 4,
+    borderBottomColor: INK,
   },
   loginActionBtnText: {
     color: "#FFFFFF",
-    fontSize: 14,
-    fontWeight: "700",
+    fontSize: 16,
+    fontWeight: "800",
+  },
+  demoSwitch: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 6,
+    marginTop: 22,
+    paddingVertical: 8,
+  },
+  demoSwitchText: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: colors.muted,
   },
 }));

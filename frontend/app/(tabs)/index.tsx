@@ -33,10 +33,11 @@ import {
 } from "lucide-react-native";
 import { useTheme, makeStyles, INK, TACTILE_CARD } from "@/src/theme";
 import { PressableScale } from "@/src/components/PressableScale";
+import { AnimatedItem } from "@/src/components/AnimatedItem";
 import { StoreCard } from "@/src/components/StoreCard";
 import { RoleSwitcherModal } from "@/src/components/RoleSwitcherModal";
 import { useAuth } from "@/src/context/AuthContext";
-import { api } from "@/src/api";
+import { api, resolveMediaUrl } from "@/src/api";
 
 const ICON_MAP: Record<string, any> = {
   utensils: Utensils,
@@ -97,6 +98,10 @@ export default function ConsumerExploreScreen() {
   };
 
   const featuredStores = stores.filter((s) => s.is_featured || s.plan_tier === "premium");
+  const isVip = (s: (typeof stores)[number]) =>
+    s.plan_tier === "premium" || s.is_featured ? 1 : 0;
+  // Premium / featured stores are pinned to the top of discovery.
+  const sortedStores = [...stores].sort((a, b) => isVip(b) - isVip(a));
   const firstName = user?.name?.split(" ")[0] || "Visitante";
 
   const roleMeta = () => {
@@ -167,7 +172,7 @@ export default function ConsumerExploreScreen() {
       </View>
 
       <FlatList
-        data={stores}
+        data={sortedStores}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={false}
@@ -269,7 +274,7 @@ export default function ConsumerExploreScreen() {
                       onPress={() => router.push(`/store/${item.id}` as any)}
                     >
                       <Image
-                        source={{ uri: item.featured_banner_url || item.banner_url }}
+                        source={{ uri: resolveMediaUrl(item.featured_banner_url || item.banner_url) }}
                         style={StyleSheet.absoluteFill}
                         contentFit="cover"
                         transition={200}
@@ -305,12 +310,14 @@ export default function ConsumerExploreScreen() {
             </View>
           </>
         }
-        renderItem={({ item }) => (
-          <StoreCard
-            store={item}
-            isFavorite={user?.saved_stores?.includes(item.id)}
-            onToggleFavorite={handleToggleFavorite}
-          />
+        renderItem={({ item, index }) => (
+          <AnimatedItem index={index}>
+            <StoreCard
+              store={item}
+              isFavorite={user?.saved_stores?.includes(item.id)}
+              onToggleFavorite={handleToggleFavorite}
+            />
+          </AnimatedItem>
         )}
         ListEmptyComponent={
           isLoadingStores ? (

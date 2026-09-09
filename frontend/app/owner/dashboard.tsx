@@ -32,8 +32,9 @@ import {
   Award,
 } from "lucide-react-native";
 import { useTheme, makeStyles, TACTILE_CARD } from "@/src/theme";
+import { ImagePickerField } from "@/src/components/ImagePickerField";
 import { useAuth } from "@/src/context/AuthContext";
-import { api } from "@/src/api";
+import { api, resolveMediaUrl } from "@/src/api";
 import { Store as StoreType } from "@/src/types";
 
 export default function OwnerDashboardScreen() {
@@ -68,6 +69,8 @@ export default function OwnerDashboardScreen() {
   const [newNeighborhood, setNewNeighborhood] = useState("");
   const [newCity, setNewCity] = useState("São Paulo");
   const [newCategoryId, setNewCategoryId] = useState("cat_gastronomia");
+  const [newLogoUrl, setNewLogoUrl] = useState("");
+  const [newBannerUrl, setNewBannerUrl] = useState("");
 
   const {
     data: stores = [],
@@ -159,11 +162,15 @@ export default function OwnerDashboardScreen() {
           phone: newPhone.trim(),
           whatsapp: newWhatsApp.trim(),
         },
+        logo_url: newLogoUrl || undefined,
+        banner_url: newBannerUrl || undefined,
         plan_tier: "free",
       });
       setIsCreateStoreModalVisible(false);
       setNewName("");
       setNewDesc("");
+      setNewLogoUrl("");
+      setNewBannerUrl("");
       queryClient.invalidateQueries({ queryKey: ["owner-stores"] });
       queryClient.invalidateQueries({ queryKey: ["stores"] });
     } catch (err: any) {
@@ -174,15 +181,15 @@ export default function OwnerDashboardScreen() {
   };
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top }]}>
+    <View style={styles.container}>
       {/* Header Bar */}
-      <View style={styles.headerBar}>
+      <View style={[styles.headerBar, { paddingTop: insets.top + 10 }]}>
         <Pressable
           testID="owner-back-btn"
           style={styles.backBtn}
           onPress={() => router.push("/(tabs)" as any)}
         >
-          <ArrowLeft size={20} color={colors.onSurface} />
+          <ArrowLeft size={20} color="#FFFFFF" />
         </Pressable>
         <Text style={styles.headerTitle}>Painel do Lojista (SaaS)</Text>
         <Pressable
@@ -267,7 +274,7 @@ export default function OwnerDashboardScreen() {
                 <View style={styles.storeProfileCard}>
                   <View style={styles.bannerWrapper}>
                     <Image
-                      source={{ uri: currentStore.banner_url || currentStore.logo_url }}
+                      source={{ uri: resolveMediaUrl(currentStore.banner_url || currentStore.logo_url) }}
                       style={styles.storeCardBanner}
                       contentFit="cover"
                     />
@@ -277,7 +284,7 @@ export default function OwnerDashboardScreen() {
                   <View style={styles.storeCardInfo}>
                     <View style={styles.storeCardTop}>
                       <Image
-                        source={{ uri: currentStore.logo_url }}
+                        source={{ uri: resolveMediaUrl(currentStore.logo_url) }}
                         style={styles.storeLogo}
                         contentFit="cover"
                       />
@@ -562,15 +569,20 @@ export default function OwnerDashboardScreen() {
                 />
               </View>
 
-              <View style={styles.inputGroup}>
-                <Text style={styles.inputLabel}>URL da Imagem de Banner</Text>
-                <TextInput
-                  testID="edit-store-banner-input"
-                  style={styles.modalInput}
-                  value={editBannerUrl}
-                  onChangeText={setEditBannerUrl}
-                />
-              </View>
+              <ImagePickerField
+                label="Logo da Loja"
+                value={editLogoUrl}
+                onChange={setEditLogoUrl}
+                aspect="square"
+                testID="edit-store-logo-picker"
+              />
+              <ImagePickerField
+                label="Banner da Loja"
+                value={editBannerUrl}
+                onChange={setEditBannerUrl}
+                aspect="banner"
+                testID="edit-store-banner-picker"
+              />
             </ScrollView>
 
             <Pressable
@@ -617,6 +629,21 @@ export default function OwnerDashboardScreen() {
                   onChangeText={setNewName}
                 />
               </View>
+
+              <ImagePickerField
+                label="Logo da Loja"
+                value={newLogoUrl}
+                onChange={setNewLogoUrl}
+                aspect="square"
+                testID="new-store-logo-picker"
+              />
+              <ImagePickerField
+                label="Banner da Loja"
+                value={newBannerUrl}
+                onChange={setNewBannerUrl}
+                aspect="banner"
+                testID="new-store-banner-picker"
+              />
 
               <View style={styles.inputGroup}>
                 <Text style={styles.inputLabel}>Categoria Principal</Text>
@@ -722,23 +749,23 @@ const useStyles = makeStyles((colors) => ({
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.divider,
-    backgroundColor: colors.surface,
+    paddingBottom: 16,
+    backgroundColor: colors.surfaceInverse,
+    borderBottomLeftRadius: 24,
+    borderBottomRightRadius: 24,
   },
   backBtn: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: colors.surfaceSecondary,
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: "rgba(255,255,255,0.12)",
     justifyContent: "center",
     alignItems: "center",
   },
   headerTitle: {
     fontSize: 16,
-    fontWeight: "700",
-    color: colors.onSurface,
+    fontWeight: "800",
+    color: "#FFFFFF",
   },
   addStoreBtn: {
     flexDirection: "row",

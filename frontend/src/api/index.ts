@@ -1,8 +1,21 @@
+import { Platform } from "react-native";
 import { storage } from "@/src/utils/storage";
 import { Store, Category, Product, Review, SaasPlan, AdminMetrics } from "@/src/types";
 
 const TOKEN_KEY = "urbanpulse_auth_token";
 const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL || "";
+
+/**
+ * Resolve a stored image reference to a loadable URL.
+ * Uploaded assets are stored as host-agnostic relative paths ("/api/files/..."),
+ * so we prepend the current backend host. Absolute URLs (seed/Unsplash) pass through.
+ */
+export function resolveMediaUrl(url?: string | null): string | undefined {
+  if (!url) return undefined;
+  if (url.startsWith("http://") || url.startsWith("https://")) return url;
+  if (url.startsWith("/")) return `${BACKEND_URL}${url}`;
+  return url;
+}
 
 async function getAuthHeaders(): Promise<Record<string, string>> {
   const token = await storage.secureGet(TOKEN_KEY, null);
@@ -16,6 +29,34 @@ async function getAuthHeaders(): Promise<Record<string, string>> {
 }
 
 export const api = {
+  // Media upload (Emergent Object Storage via backend)
+  uploadImage: async (
+    uri: string,
+    filename = "photo.jpg",
+    mime = "image/jpeg",
+  ): Promise<string> => {
+    const token = await storage.secureGet(TOKEN_KEY, null);
+    const form = new FormData();
+    if (Platform.OS === "web") {
+      const blob = await (await fetch(uri)).blob();
+      form.append("file", blob, filename);
+    } else {
+      form.append("file", { uri, name: filename, type: mime } as any);
+    }
+    const res = await fetch(`${BACKEND_URL}/api/upload`, {
+      method: "POST",
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+      body: form,
+    });
+    if (!res.ok) {
+      const t = await res.text().catch(() => "");
+      throw new Error(t || "Falha no upload da imagem");
+    }
+    const data = await res.json();
+    // Store the host-agnostic relative path; resolve to absolute at render time.
+    return data.url as string;
+  },
+
   // Public & Consumer
   getCategories: async (): Promise<Category[]> => {
     const res = await fetch(`${BACKEND_URL}/api/categories`);

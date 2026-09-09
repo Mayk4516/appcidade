@@ -23,7 +23,6 @@ import {
 } from "lucide-react-native";
 import { useTheme, makeStyles, TACTILE_CARD } from "@/src/theme";
 import { PressableScale } from "@/src/components/PressableScale";
-import { Header } from "@/src/components/Header";
 import { api } from "@/src/api";
 import { Category } from "@/src/types";
 
@@ -62,8 +61,14 @@ export default function CategoriesScreen() {
   };
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top }]}>
-      <Header />
+    <View style={styles.container}>
+      <View style={[styles.hero, { paddingTop: insets.top + 18 }]}>
+        <Text style={styles.heroLabel}>GUIA COMERCIAL</Text>
+        <Text style={styles.title}>Categorias</Text>
+        <Text style={styles.subtitle}>
+          Encontre exatamente o que procura nas melhores lojas da cidade
+        </Text>
+      </View>
 
       <ScrollView
         contentContainerStyle={styles.scrollContent}
@@ -76,13 +81,6 @@ export default function CategoriesScreen() {
           />
         }
       >
-        <View style={styles.titleSection}>
-          <Text style={styles.title}>Categorias Comerciais</Text>
-          <Text style={styles.subtitle}>
-            Encontre exatamente o que procura nas melhores lojas de São Paulo
-          </Text>
-        </View>
-
         {isLoading ? (
           <View style={styles.loadingContainer} testID="categories-loading">
             <ActivityIndicator size="large" color={colors.brandPrimary} />
@@ -136,23 +134,34 @@ const useStyles = makeStyles((colors) => ({
     backgroundColor: colors.surface,
   },
   scrollContent: {
-    paddingHorizontal: 16,
-    paddingTop: 16,
+    paddingHorizontal: 20,
+    paddingTop: 22,
     paddingBottom: 32,
   },
-  titleSection: {
-    marginBottom: 20,
+  hero: {
+    backgroundColor: colors.surfaceInverse,
+    paddingHorizontal: 20,
+    paddingBottom: 22,
+    borderBottomLeftRadius: 28,
+    borderBottomRightRadius: 28,
+  },
+  heroLabel: {
+    fontSize: 12,
+    fontWeight: "800",
+    color: "rgba(255,255,255,0.5)",
+    letterSpacing: 1,
+    marginBottom: 8,
   },
   title: {
     fontSize: 26,
     fontWeight: "800",
-    color: colors.onSurface,
+    color: "#FFFFFF",
     letterSpacing: -0.5,
     marginBottom: 4,
   },
   subtitle: {
     fontSize: 14,
-    color: colors.muted,
+    color: "rgba(255,255,255,0.65)",
     lineHeight: 19,
   },
   loadingContainer: {

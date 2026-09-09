@@ -12,7 +12,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import { Heart, Compass, LogIn } from "lucide-react-native";
 import { useTheme, makeStyles } from "@/src/theme";
-import { Header } from "@/src/components/Header";
+import { AnimatedItem } from "@/src/components/AnimatedItem";
 import { StoreCard } from "@/src/components/StoreCard";
 import { useAuth } from "@/src/context/AuthContext";
 import { api } from "@/src/api";
@@ -48,13 +48,12 @@ export default function FavoritesScreen() {
   };
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top }]}>
-      <Header />
-
-      <View style={styles.titleSection}>
+    <View style={styles.container}>
+      <View style={[styles.hero, { paddingTop: insets.top + 18 }]}>
+        <Text style={styles.heroLabel}>SEUS SALVOS</Text>
         <Text style={styles.title}>Lojas Salvas</Text>
         <Text style={styles.subtitle}>
-          Seus comércios favoritos da cidade reunidos em um só lugar
+          Seus comércios favoritos da cidade em um só lugar
         </Text>
       </View>
 
@@ -93,12 +92,14 @@ export default function FavoritesScreen() {
               tintColor={colors.brandPrimary}
             />
           }
-          renderItem={({ item }) => (
-            <StoreCard
-              store={item}
-              isFavorite={true}
-              onToggleFavorite={handleToggleFavorite}
-            />
+          renderItem={({ item, index }) => (
+            <AnimatedItem index={index}>
+              <StoreCard
+                store={item}
+                isFavorite={true}
+                onToggleFavorite={handleToggleFavorite}
+              />
+            </AnimatedItem>
           )}
           ListEmptyComponent={
             <View style={styles.emptyContainer} testID="favorites-empty">
@@ -130,25 +131,34 @@ const useStyles = makeStyles((colors) => ({
     flex: 1,
     backgroundColor: colors.surface,
   },
-  titleSection: {
-    paddingHorizontal: 16,
-    paddingTop: 16,
-    paddingBottom: 8,
+  hero: {
+    backgroundColor: colors.surfaceInverse,
+    paddingHorizontal: 20,
+    paddingBottom: 22,
+    borderBottomLeftRadius: 28,
+    borderBottomRightRadius: 28,
+  },
+  heroLabel: {
+    fontSize: 12,
+    fontWeight: "800",
+    color: "rgba(255,255,255,0.5)",
+    letterSpacing: 1,
+    marginBottom: 8,
   },
   title: {
     fontSize: 26,
     fontWeight: "800",
-    color: colors.onSurface,
+    color: "#FFFFFF",
     letterSpacing: -0.5,
     marginBottom: 4,
   },
   subtitle: {
     fontSize: 14,
-    color: colors.muted,
+    color: "rgba(255,255,255,0.65)",
   },
   listContent: {
-    paddingHorizontal: 16,
-    paddingTop: 8,
+    paddingHorizontal: 20,
+    paddingTop: 20,
     paddingBottom: 24,
   },
   loadingContainer: {

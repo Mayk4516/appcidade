@@ -65,18 +65,18 @@ export default function OwnerPlansScreen() {
   };
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top }]}>
+    <View style={styles.container}>
       {/* Header */}
-      <View style={styles.headerBar}>
+      <View style={[styles.headerBar, { paddingTop: insets.top + 10 }]}>
         <Pressable
           testID="plans-back-btn"
           style={styles.backBtn}
           onPress={() => router.back()}
         >
-          <ArrowLeft size={20} color={colors.onSurface} />
+          <ArrowLeft size={20} color="#FFFFFF" />
         </Pressable>
         <Text style={styles.headerTitle}>Planos SaaS & Destaques</Text>
-        <View style={{ width: 36 }} />
+        <View style={{ width: 38 }} />
       </View>
 
       <ScrollView
@@ -190,23 +190,23 @@ const useStyles = makeStyles((colors) => ({
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.divider,
-    backgroundColor: colors.surface,
+    paddingBottom: 16,
+    backgroundColor: colors.surfaceInverse,
+    borderBottomLeftRadius: 24,
+    borderBottomRightRadius: 24,
   },
   backBtn: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: colors.surfaceSecondary,
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: "rgba(255,255,255,0.12)",
     justifyContent: "center",
     alignItems: "center",
   },
   headerTitle: {
     fontSize: 16,
-    fontWeight: "700",
-    color: colors.onSurface,
+    fontWeight: "800",
+    color: "#FFFFFF",
   },
   scrollContent: {
     paddingHorizontal: 16,

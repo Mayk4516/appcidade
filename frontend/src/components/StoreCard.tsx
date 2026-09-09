@@ -1,7 +1,15 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { View, Text, Pressable, Linking, StyleSheet } from "react-native";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withRepeat,
+  withTiming,
+  withSequence,
+  Easing,
+} from "react-native-reanimated";
 import {
   Star,
   CheckCircle2,
@@ -11,10 +19,10 @@ import {
   Heart,
   Sparkles,
 } from "lucide-react-native";
-import { useTheme, makeStyles, INK, TACTILE_CARD } from "@/src/theme";
+import { useTheme, makeStyles, TACTILE_CARD } from "@/src/theme";
 import { PressableScale } from "@/src/components/PressableScale";
 import { Store } from "@/src/types";
-import { api } from "@/src/api";
+import { api, resolveMediaUrl } from "@/src/api";
 
 interface StoreCardProps {
   store: Store;
@@ -52,6 +60,21 @@ export const StoreCard: React.FC<StoreCardProps> = ({
 
   const isPremium = store.plan_tier === "premium";
 
+  const vipPulse = useSharedValue(1);
+  useEffect(() => {
+    if (isPremium) {
+      vipPulse.value = withRepeat(
+        withSequence(
+          withTiming(1.08, { duration: 700, easing: Easing.inOut(Easing.ease) }),
+          withTiming(1, { duration: 700, easing: Easing.inOut(Easing.ease) }),
+        ),
+        -1,
+        false,
+      );
+    }
+  }, [isPremium, vipPulse]);
+  const vipAnimStyle = useAnimatedStyle(() => ({ transform: [{ scale: vipPulse.value }] }));
+
   return (
     <PressableScale
       testID={`store-card-${store.id}`}
@@ -62,7 +85,7 @@ export const StoreCard: React.FC<StoreCardProps> = ({
       {/* Banner */}
       <View style={styles.imageContainer}>
         <Image
-          source={{ uri: store.banner_url || store.logo_url }}
+          source={{ uri: resolveMediaUrl(store.banner_url || store.logo_url) }}
           style={styles.bannerImage}
           contentFit="cover"
           transition={200}
@@ -70,10 +93,13 @@ export const StoreCard: React.FC<StoreCardProps> = ({
         <View style={styles.imageScrim} />
 
         {isPremium && (
-          <View style={styles.vipBadge} testID={`vip-badge-${store.id}`}>
+          <Animated.View
+            style={[styles.vipBadge, vipAnimStyle]}
+            testID={`vip-badge-${store.id}`}
+          >
             <Sparkles size={12} color="#FFFFFF" />
             <Text style={styles.vipBadgeText}>DESTAQUE VIP</Text>
-          </View>
+          </Animated.View>
         )}
 
         {onToggleFavorite && (
@@ -95,7 +121,7 @@ export const StoreCard: React.FC<StoreCardProps> = ({
         )}
 
         <View style={styles.logoBadgeContainer}>
-          <Image source={{ uri: store.logo_url }} style={styles.logoImage} contentFit="cover" />
+          <Image source={{ uri: resolveMediaUrl(store.logo_url) }} style={styles.logoImage} contentFit="cover" />
         </View>
       </View>
 

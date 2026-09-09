@@ -33,7 +33,7 @@ import {
 } from "lucide-react-native";
 import { useTheme, makeStyles } from "@/src/theme";
 import { useAuth } from "@/src/context/AuthContext";
-import { api } from "@/src/api";
+import { api, resolveMediaUrl } from "@/src/api";
 import { Store, Product, Review } from "@/src/types";
 
 export default function StoreDetailScreen() {
@@ -194,7 +194,7 @@ export default function StoreDetailScreen() {
         {/* Full-bleed Hero Banner */}
         <View style={styles.heroBannerContainer}>
           <Image
-            source={{ uri: store.banner_url || store.logo_url }}
+            source={{ uri: resolveMediaUrl(store.banner_url || store.logo_url) }}
             style={styles.heroBanner}
             contentFit="cover"
           />
@@ -235,7 +235,7 @@ export default function StoreDetailScreen() {
           {/* Floating Store Logo Avatar */}
           <View style={styles.logoBadge}>
             <Image
-              source={{ uri: store.logo_url }}
+              source={{ uri: resolveMediaUrl(store.logo_url) }}
               style={styles.logoImage}
               contentFit="cover"
             />
@@ -393,7 +393,7 @@ export default function StoreDetailScreen() {
                     testID={`product-card-${item.id}`}
                   >
                     <Image
-                      source={{ uri: item.image_url }}
+                      source={{ uri: resolveMediaUrl(item.image_url) }}
                       style={styles.productImage}
                       contentFit="cover"
                     />

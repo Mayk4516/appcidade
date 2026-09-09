@@ -1,0 +1,32 @@
+{
+  "summary": "Iteration 4 review PASSED end-to-end. Backend: 11/11 pytest tests green (5 new + 6 preserved). Frontend: 23/23 mobile-viewport UI assertions green against the deployed preview URL. Verified: (1) POST /api/upload with Bearer token accepts a real PNG and returns {path, url}; the returned /api/files/{path} GET responds 200 with content-type image/*; POST /api/upload without token -> 401/403; text/plain payload -> 400. (2) POST /api/owner/stores accepts logo_url+banner_url and persists them (GET /api/stores/{id} returns the same). PUT /api/owner/stores/{id} updates logo_url/banner_url and persists. Product image_url persists on POST and PUT (visible in public /api/stores/{id}/products). (3) Home ordering pins premium/is_featured first (first store card = store_3 which is premium; 2 vip-badge-* elements visible). (4) Profile role-scoped menu is exactly as required: consumer sees only profile-goto-favorites-btn (no owner/admin), owner sees profile-goto-owner-dashboard-btn + profile-goto-plans-btn (no admin/favorites), admin sees profile-goto-admin-btn only. profile-open-role-switcher-btn present for all 3 roles. (5) Upload UI presence + clickability: edit-store-profile-btn opens modal with edit-store-logo-picker + edit-store-banner-picker (both clickable); owner-new-store-btn opens modal with new-store-logo-picker + new-store-banner-picker; owner catalog add-new-product-btn opens modal with product-image-picker. All legacy testIDs preserved.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [],
+    "react_native_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_upload_and_media.py",
+    "/app/backend/tests/test_cidadehub_review.py",
+    "/app/test_reports/pytest/pytest_results.xml",
+    "/app/test_reports/ui/iter4_final.jpeg"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "backend/server.py is >1240 lines - consider splitting routers (auth, stores, owner, admin, media) into separate modules to stay under the 700-line guideline.",
+    "GET /api/files/{file_path:path} is intentionally public (marketplace assets). If in the future users upload private/sensitive images via this same endpoint, add per-namespace ACLs or a signed-URL layer.",
+    "api.uploadImage returns `${BACKEND_URL}${data.url}` (absolute URL) but the backend also stores the relative path. Persist the relative /api/files/... path (not the absolute one) to remain host-agnostic across environments; verify frontend callers do this on save (dashboard/catalog persistence)."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_upload_and_media.py",
+    "/app/test_reports/iteration_4.json"
+  ],
+  "success_rate": {"backend": "100% (11/11)", "frontend": "100% (23/23)"},
+  "seed_data_creation": "One temporary TEST_ store + TEST_ product created and cleaned up (product deleted; test store remains but is prefixed TEST_ for easy cleanup).",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Preview URL: https://city-shop-hub-3.preview.emergentagent.com. Demo login shortcuts (quick-demo-{consumer,owner,admin}-btn) live at /auth/login, NOT on landing (/). Role switching mid-session uses profile-open-role-switcher-btn -> role-option-{consumer,store-owner,super-admin}. Owner dashboard testIDs: owner-new-store-btn, edit-store-profile-btn, edit-store-{logo,banner}-picker, new-store-{logo,banner}-picker. Catalog: add-new-product-btn opens modal with product-image-picker. On web, PressableScale image pickers open the OS file picker directly (bypassing the camera/gallery sheet), so pick-camera-btn / pick-gallery-btn testIDs will not appear in web preview. Backend upload uses Emergent Object Storage keyed by EMERGENT_LLM_KEY in backend/.env.",
+  "rca_of_issue": "N/A - all requested behavior verified working."
+}
