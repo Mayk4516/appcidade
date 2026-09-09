@@ -142,8 +142,8 @@ const useStyles = makeStyles((colors) => ({
     backgroundColor: colors.surfaceInverse,
     paddingHorizontal: 20,
     paddingBottom: 22,
-    borderBottomLeftRadius: 28,
-    borderBottomRightRadius: 28,
+    borderBottomLeftRadius: 22,
+    borderBottomRightRadius: 22,
   },
   heroLabel: {
     fontSize: 12,
@@ -179,9 +179,9 @@ const useStyles = makeStyles((colors) => ({
   },
   categoryCard: {
     backgroundColor: colors.surfaceSecondary,
-    borderWidth: 2,
+    borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: 20,
+    borderRadius: 16,
     padding: 16,
     ...TACTILE_CARD,
   },

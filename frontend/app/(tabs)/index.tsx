@@ -31,7 +31,7 @@ import {
   Store as StoreIcon,
   Shield,
 } from "lucide-react-native";
-import { useTheme, makeStyles, INK, TACTILE_CARD } from "@/src/theme";
+import { useTheme, makeStyles, TACTILE_CARD } from "@/src/theme";
 import { PressableScale } from "@/src/components/PressableScale";
 import { AnimatedItem } from "@/src/components/AnimatedItem";
 import { StoreCard } from "@/src/components/StoreCard";
@@ -49,9 +49,6 @@ const ICON_MAP: Record<string, any> = {
   home: HomeIcon,
   smartphone: Smartphone,
 };
-
-const TILE_COLORS = ["#FEF3C7", "#DCFCE7", "#DBEAFE", "#F3E8FF", "#FFE4E6", "#E0F2FE"];
-const TILE_ICON_COLORS = ["#B45309", "#15803D", "#1D4ED8", "#7E22CE", "#BE123C", "#0369A1"];
 
 export default function ConsumerExploreScreen() {
   const insets = useSafeAreaInsets();
@@ -219,7 +216,7 @@ export default function ConsumerExploreScreen() {
                 </Text>
               </PressableScale>
 
-              {categories.map((cat, idx) => {
+              {categories.map((cat) => {
                 const IconComp = ICON_MAP[cat.icon] || Sparkles;
                 const isSel = selectedCategory === cat.id;
                 return (
@@ -232,13 +229,12 @@ export default function ConsumerExploreScreen() {
                     <View
                       style={[
                         styles.catTileIcon,
-                        { backgroundColor: TILE_COLORS[idx % TILE_COLORS.length] },
-                        isSel && styles.catTileIconActiveRing,
+                        isSel ? styles.catTileIconSelected : styles.catTileIconDefault,
                       ]}
                     >
                       <IconComp
-                        size={24}
-                        color={TILE_ICON_COLORS[idx % TILE_ICON_COLORS.length]}
+                        size={22}
+                        color={isSel ? colors.brandPrimary : colors.onSurfaceTertiary}
                       />
                     </View>
                     <Text
@@ -370,10 +366,10 @@ const useStyles = makeStyles((colors) => ({
   },
   hero: {
     backgroundColor: colors.surfaceInverse,
-    paddingHorizontal: 20,
-    paddingBottom: 40,
-    borderBottomLeftRadius: 28,
-    borderBottomRightRadius: 28,
+    paddingHorizontal: 22,
+    paddingBottom: 46,
+    borderBottomLeftRadius: 22,
+    borderBottomRightRadius: 22,
   },
   heroTopRow: {
     flexDirection: "row",
@@ -381,15 +377,15 @@ const useStyles = makeStyles((colors) => ({
     gap: 12,
   },
   heroGreeting: {
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: "800",
     color: colors.onSurfaceInverse,
-    letterSpacing: -0.4,
+    letterSpacing: -0.5,
   },
   heroTagline: {
     fontSize: 14,
-    color: "rgba(255,255,255,0.65)",
-    marginTop: 3,
+    color: "rgba(255,255,255,0.6)",
+    marginTop: 4,
   },
   rolePill: {
     flexDirection: "row",
@@ -419,8 +415,8 @@ const useStyles = makeStyles((colors) => ({
   searchFloatWrap: {
     flexDirection: "row",
     gap: 10,
-    paddingHorizontal: 20,
-    marginTop: -26,
+    paddingHorizontal: 22,
+    marginTop: -28,
   },
   searchBar: {
     flex: 1,
@@ -429,7 +425,7 @@ const useStyles = makeStyles((colors) => ({
     gap: 10,
     backgroundColor: colors.surfaceSecondary,
     borderRadius: 16,
-    borderWidth: 2,
+    borderWidth: 1,
     borderColor: colors.border,
     paddingHorizontal: 14,
     height: 54,
@@ -446,28 +442,29 @@ const useStyles = makeStyles((colors) => ({
     height: 54,
     borderRadius: 16,
     backgroundColor: colors.surfaceSecondary,
-    borderWidth: 2,
-    borderColor: colors.brandPrimary,
+    borderWidth: 1,
+    borderColor: colors.border,
     alignItems: "center",
     justifyContent: "center",
     ...TACTILE_CARD,
   },
   verifiedBtnActive: {
     backgroundColor: colors.brandPrimary,
+    borderColor: colors.brandPrimary,
   },
   listContent: {
-    paddingHorizontal: 20,
-    paddingTop: 22,
-    paddingBottom: 28,
+    paddingHorizontal: 22,
+    paddingTop: 30,
+    paddingBottom: 32,
   },
   sectionHeadRow: {
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
-    marginBottom: 14,
+    marginBottom: 16,
   },
   sectionTitle: {
-    fontSize: 19,
+    fontSize: 20,
     fontWeight: "800",
     color: colors.onSurface,
     letterSpacing: -0.3,
@@ -481,7 +478,7 @@ const useStyles = makeStyles((colors) => ({
     justifyContent: "center",
   },
   tilesContent: {
-    gap: 16,
+    gap: 18,
     paddingRight: 8,
     paddingBottom: 6,
   },
@@ -491,17 +488,25 @@ const useStyles = makeStyles((colors) => ({
     gap: 7,
   },
   catTileIcon: {
-    width: 62,
-    height: 62,
-    borderRadius: 20,
+    width: 60,
+    height: 60,
+    borderRadius: 18,
     alignItems: "center",
     justifyContent: "center",
-    borderWidth: 2,
+    borderWidth: 1,
     borderColor: "transparent",
     ...TACTILE_CARD,
   },
+  catTileIconDefault: {
+    backgroundColor: colors.surfaceSecondary,
+    borderColor: colors.border,
+  },
+  catTileIconSelected: {
+    backgroundColor: colors.brandTertiary,
+    borderColor: colors.brand,
+  },
   catTileIconActiveRing: {
-    borderColor: colors.onSurface,
+    borderColor: colors.onSurfaceInverse,
   },
   catTileLabel: {
     fontSize: 12,
@@ -513,7 +518,7 @@ const useStyles = makeStyles((colors) => ({
     fontWeight: "800",
   },
   featuredSection: {
-    marginTop: 26,
+    marginTop: 34,
   },
   featuredContent: {
     gap: 14,
@@ -523,10 +528,10 @@ const useStyles = makeStyles((colors) => ({
   featuredCard: {
     width: 260,
     height: 150,
-    borderRadius: 20,
+    borderRadius: 16,
     overflow: "hidden",
     backgroundColor: colors.surfaceTertiary,
-    borderWidth: 2,
+    borderWidth: 1,
     borderColor: colors.borderStrong,
   },
   featuredScrim: {
@@ -568,8 +573,8 @@ const useStyles = makeStyles((colors) => ({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginTop: 26,
-    marginBottom: 16,
+    marginTop: 34,
+    marginBottom: 18,
   },
   resultsCount: {
     fontSize: 13,
@@ -581,8 +586,8 @@ const useStyles = makeStyles((colors) => ({
   },
   skeletonCard: {
     backgroundColor: colors.surfaceSecondary,
-    borderRadius: 20,
-    borderWidth: 2,
+    borderRadius: 16,
+    borderWidth: 1,
     borderColor: colors.border,
     padding: 12,
     gap: 10,
@@ -639,8 +644,6 @@ const useStyles = makeStyles((colors) => ({
     borderRadius: 16,
     alignItems: "center",
     justifyContent: "center",
-    borderBottomWidth: 4,
-    borderBottomColor: INK,
   },
   resetBtnText: {
     color: "#FFFFFF",

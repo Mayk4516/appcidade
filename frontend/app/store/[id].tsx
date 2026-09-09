@@ -847,8 +847,6 @@ const useStyles = makeStyles((colors) => ({
   channelBtnWhatsApp: {
     flex: 1.6,
     backgroundColor: "#22C55E",
-    borderBottomWidth: 4,
-    borderBottomColor: "#15803D",
   },
   channelBtnWhatsAppText: {
     color: "#FFFFFF",
@@ -1070,8 +1068,6 @@ const useStyles = makeStyles((colors) => ({
     paddingVertical: 10,
     borderRadius: 12,
     gap: 4,
-    borderBottomWidth: 3,
-    borderBottomColor: "#1C1917",
   },
   addReviewBtnText: {
     color: "#FFFFFF",
@@ -1137,8 +1133,6 @@ const useStyles = makeStyles((colors) => ({
     height: 54,
     borderRadius: 16,
     gap: 8,
-    borderBottomWidth: 4,
-    borderBottomColor: "#15803D",
   },
   stickyWhatsAppText: {
     color: "#FFFFFF",
@@ -1211,8 +1205,6 @@ const useStyles = makeStyles((colors) => ({
     borderRadius: 16,
     alignItems: "center",
     justifyContent: "center",
-    borderBottomWidth: 4,
-    borderBottomColor: "#1C1917",
   },
   modalSubmitText: {
     color: "#FFFFFF",

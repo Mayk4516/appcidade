@@ -7,26 +7,26 @@ import { Appearance, StyleSheet, useColorScheme } from "react-native";
 export type ColorScheme = "light" | "dark";
 
 const light = {
-  // Surfaces: backgrounds, from the screen down to small fills.
-  surface: "#F9F8F6",
-  onSurface: "#1C1917",
+  // Surfaces: clean off-white / graphite neutrals.
+  surface: "#F6F7F9",
+  onSurface: "#1A1D23",
   surfaceSecondary: "#FFFFFF",
-  onSurfaceSecondary: "#1C1917",
-  surfaceTertiary: "#F5F5F5",
-  onSurfaceTertiary: "#374151",
-  surfaceInverse: "#1C1917",
+  onSurfaceSecondary: "#1A1D23",
+  surfaceTertiary: "#EEF0F4",
+  onSurfaceTertiary: "#4A5160",
+  surfaceInverse: "#171A21",
   onSurfaceInverse: "#FFFFFF",
-  muted: "#78716C",
+  muted: "#868D9A",
 
-  // Brand: Warm Ochre & Amber palette
-  brand: "#D97706",
+  // Brand: discreet, premium indigo
+  brand: "#4F46E5",
   onBrand: "#FFFFFF",
-  brandPrimary: "#B45309",
+  brandPrimary: "#4F46E5",
   onBrandPrimary: "#FFFFFF",
-  brandSecondary: "#D97706",
+  brandSecondary: "#4338CA",
   onBrandSecondary: "#FFFFFF",
-  brandTertiary: "#FEF3C7",
-  onBrandTertiary: "#B45309",
+  brandTertiary: "#EEF0FF",
+  onBrandTertiary: "#4338CA",
 
   // Semantic Status
   success: "#16A34A",
@@ -39,31 +39,29 @@ const light = {
   onInfo: "#FFFFFF",
 
   // Lines
-  border: "#E7E5E4",
-  borderStrong: "#D6D3D1",
-  divider: "#E7E5E4",
+  border: "#E7E9EE",
+  borderStrong: "#D5D9E0",
+  divider: "#ECEEF2",
 };
 
-// Duolingo-style tactile "sticker" depth. Dark ink shadow stays identical in
-// both schemes, so these literals are intentional.
-export const INK = "#1C1917";
+// Dark ink literal (kept for a few fixed-in-both-schemes needs).
+export const INK = "#1A1D23";
 
-// Solid offset shadow for chunky cards / buttons (iOS + web). Android falls
-// back to elevation. Pair with a thicker bottom border for the 3D block feel.
+// Soft, elegant elevation for cards (light + web). Android uses elevation.
 export const TACTILE_CARD = {
-  shadowColor: INK,
-  shadowOffset: { width: 0, height: 4 },
-  shadowOpacity: 0.12,
-  shadowRadius: 12,
-  elevation: 3,
+  shadowColor: "#0B1220",
+  shadowOffset: { width: 0, height: 6 },
+  shadowOpacity: 0.06,
+  shadowRadius: 16,
+  elevation: 2,
 } as const;
 
 export const TACTILE_BLOCK = {
-  shadowColor: INK,
-  shadowOffset: { width: 0, height: 6 },
-  shadowOpacity: 1,
-  shadowRadius: 0,
-  elevation: 6,
+  shadowColor: "#0B1220",
+  shadowOffset: { width: 0, height: 8 },
+  shadowOpacity: 0.1,
+  shadowRadius: 20,
+  elevation: 4,
 } as const;
 
 export type ThemeColors = typeof light;

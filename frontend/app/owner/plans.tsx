@@ -268,15 +268,15 @@ const useStyles = makeStyles((colors) => ({
   },
   planCard: {
     backgroundColor: colors.surfaceSecondary,
-    borderWidth: 2,
+    borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: 20,
+    borderRadius: 16,
     padding: 18,
     ...TACTILE_CARD,
   },
   planCardVIP: {
     borderColor: colors.brand,
-    borderWidth: 2,
+    borderWidth: 1,
     backgroundColor: "#FFFDF6",
     position: "relative",
     paddingTop: 24,
@@ -349,8 +349,6 @@ const useStyles = makeStyles((colors) => ({
     borderRadius: 16,
     alignItems: "center",
     justifyContent: "center",
-    borderBottomWidth: 4,
-    borderBottomColor: "#1C1917",
   },
   subscribeBtnVIP: {
     backgroundColor: colors.brandSecondary,

@@ -173,7 +173,7 @@ const useStyles = makeStyles((colors) => ({
   },
   preview: {
     backgroundColor: colors.surfaceSecondary,
-    borderWidth: 2,
+    borderWidth: 1,
     borderColor: colors.border,
     borderRadius: 16,
     overflow: "hidden",
@@ -266,7 +266,7 @@ const useStyles = makeStyles((colors) => ({
     alignItems: "center",
     gap: 14,
     backgroundColor: colors.surfaceSecondary,
-    borderWidth: 2,
+    borderWidth: 1,
     borderColor: colors.border,
     borderRadius: 16,
     padding: 14,

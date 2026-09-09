@@ -135,8 +135,8 @@ const useStyles = makeStyles((colors) => ({
     backgroundColor: colors.surfaceInverse,
     paddingHorizontal: 20,
     paddingBottom: 22,
-    borderBottomLeftRadius: 28,
-    borderBottomRightRadius: 28,
+    borderBottomLeftRadius: 22,
+    borderBottomRightRadius: 22,
   },
   heroLabel: {
     fontSize: 12,
@@ -207,8 +207,6 @@ const useStyles = makeStyles((colors) => ({
     height: 52,
     borderRadius: 16,
     gap: 8,
-    borderBottomWidth: 4,
-    borderBottomColor: "#1C1917",
   },
   actionBtnText: {
     color: "#FFFFFF",

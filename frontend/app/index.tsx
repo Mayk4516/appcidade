@@ -222,7 +222,7 @@ const useStyles = makeStyles((colors) => ({
     backgroundColor: colors.brandTertiary,
     paddingHorizontal: 12,
     paddingVertical: 6,
-    borderRadius: 20,
+    borderRadius: 16,
     marginBottom: 12,
   },
   heroBadgeText: {

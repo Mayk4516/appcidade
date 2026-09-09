@@ -796,7 +796,7 @@ const useStyles = makeStyles((colors) => ({
     borderColor: colors.border,
     paddingHorizontal: 14,
     paddingVertical: 8,
-    borderRadius: 20,
+    borderRadius: 16,
   },
   storePillActive: {
     backgroundColor: colors.brandPrimary,
@@ -845,7 +845,7 @@ const useStyles = makeStyles((colors) => ({
     width: 54,
     height: 54,
     borderRadius: 14,
-    borderWidth: 2,
+    borderWidth: 1,
     borderColor: colors.surfaceSecondary,
     backgroundColor: colors.surfaceSecondary,
   },
@@ -879,8 +879,6 @@ const useStyles = makeStyles((colors) => ({
     height: 46,
     borderRadius: 14,
     gap: 6,
-    borderBottomWidth: 4,
-    borderBottomColor: "#1C1917",
   },
   editProfileBtnText: {
     color: "#FFFFFF",
@@ -972,7 +970,7 @@ const useStyles = makeStyles((colors) => ({
   metricCard: {
     width: "48%",
     backgroundColor: colors.surfaceSecondary,
-    borderWidth: 2,
+    borderWidth: 1,
     borderColor: colors.border,
     borderRadius: 18,
     padding: 14,
@@ -1102,8 +1100,6 @@ const useStyles = makeStyles((colors) => ({
     height: 52,
     borderRadius: 16,
     gap: 8,
-    borderBottomWidth: 4,
-    borderBottomColor: "#1C1917",
   },
   createFirstStoreBtnText: {
     color: "#FFFFFF",

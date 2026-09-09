@@ -19,7 +19,7 @@ import {
   Shield,
   MapPin,
 } from "lucide-react-native";
-import { useTheme, makeStyles, INK, TACTILE_CARD } from "@/src/theme";
+import { useTheme, makeStyles, TACTILE_CARD } from "@/src/theme";
 import { PressableScale } from "@/src/components/PressableScale";
 import { useAuth } from "@/src/context/AuthContext";
 import { UserRole } from "@/src/types";
@@ -298,13 +298,13 @@ const useStyles = makeStyles((colors) => ({
     backgroundColor: colors.surfaceInverse,
     paddingHorizontal: 20,
     paddingBottom: 32,
-    borderBottomLeftRadius: 28,
-    borderBottomRightRadius: 28,
+    borderBottomLeftRadius: 22,
+    borderBottomRightRadius: 22,
   },
   backBtn: {
     width: 40,
     height: 40,
-    borderRadius: 20,
+    borderRadius: 16,
     backgroundColor: "rgba(255,255,255,0.12)",
     justifyContent: "center",
     alignItems: "center",
@@ -316,13 +316,11 @@ const useStyles = makeStyles((colors) => ({
   brandMark: {
     width: 60,
     height: 60,
-    borderRadius: 20,
+    borderRadius: 16,
     backgroundColor: colors.brandPrimary,
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 12,
-    borderBottomWidth: 4,
-    borderBottomColor: colors.brandSecondary,
   },
   brandTitle: {
     fontSize: 28,
@@ -353,7 +351,7 @@ const useStyles = makeStyles((colors) => ({
   demoCard: {
     flex: 1,
     backgroundColor: colors.surfaceSecondary,
-    borderWidth: 2,
+    borderWidth: 1,
     borderColor: colors.border,
     borderRadius: 18,
     padding: 12,
@@ -423,7 +421,7 @@ const useStyles = makeStyles((colors) => ({
   },
   errorBox: {
     backgroundColor: "#FEE2E2",
-    borderWidth: 2,
+    borderWidth: 1,
     borderColor: "#FCA5A5",
     padding: 12,
     borderRadius: 14,
@@ -447,7 +445,7 @@ const useStyles = makeStyles((colors) => ({
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: colors.surfaceSecondary,
-    borderWidth: 2,
+    borderWidth: 1,
     borderColor: colors.border,
     borderRadius: 14,
     paddingHorizontal: 14,
@@ -468,7 +466,7 @@ const useStyles = makeStyles((colors) => ({
   roleBtn: {
     flex: 1,
     backgroundColor: colors.surfaceSecondary,
-    borderWidth: 2,
+    borderWidth: 1,
     borderColor: colors.border,
     borderRadius: 14,
     paddingVertical: 13,
@@ -494,8 +492,6 @@ const useStyles = makeStyles((colors) => ({
     justifyContent: "center",
     alignItems: "center",
     marginTop: 8,
-    borderBottomWidth: 4,
-    borderBottomColor: INK,
   },
   submitBtnText: {
     color: "#FFFFFF",

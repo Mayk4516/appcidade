@@ -214,8 +214,8 @@ const useStyles = makeStyles((colors) => ({
     backgroundColor: colors.surfaceInverse,
     paddingHorizontal: 20,
     paddingBottom: 22,
-    borderBottomLeftRadius: 28,
-    borderBottomRightRadius: 28,
+    borderBottomLeftRadius: 22,
+    borderBottomRightRadius: 22,
   },
   heroLabel: {
     fontSize: 12,
@@ -232,7 +232,7 @@ const useStyles = makeStyles((colors) => ({
   avatarCircle: {
     width: 58,
     height: 58,
-    borderRadius: 20,
+    borderRadius: 16,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -276,7 +276,7 @@ const useStyles = makeStyles((colors) => ({
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: colors.surfaceSecondary,
-    borderWidth: 2,
+    borderWidth: 1,
     borderColor: colors.border,
     borderRadius: 18,
     padding: 14,
@@ -306,7 +306,7 @@ const useStyles = makeStyles((colors) => ({
   },
   infoCard: {
     backgroundColor: colors.surfaceSecondary,
-    borderWidth: 2,
+    borderWidth: 1,
     borderColor: colors.border,
     borderRadius: 18,
     padding: 16,
@@ -346,8 +346,6 @@ const useStyles = makeStyles((colors) => ({
     height: 54,
     borderRadius: 16,
     gap: 8,
-    borderBottomWidth: 4,
-    borderBottomColor: "#FCA5A5",
   },
   logoutBtnText: {
     color: colors.error,
@@ -360,8 +358,6 @@ const useStyles = makeStyles((colors) => ({
     borderRadius: 18,
     alignItems: "center",
     justifyContent: "center",
-    borderBottomWidth: 4,
-    borderBottomColor: INK,
   },
   loginActionBtnText: {
     color: "#FFFFFF",

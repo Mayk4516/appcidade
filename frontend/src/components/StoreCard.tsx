@@ -196,8 +196,8 @@ export const StoreCard: React.FC<StoreCardProps> = ({
 const useStyles = makeStyles((colors) => ({
   card: {
     backgroundColor: colors.surfaceSecondary,
-    borderRadius: 20,
-    borderWidth: 2,
+    borderRadius: 16,
+    borderWidth: 1,
     borderColor: colors.border,
     marginBottom: 18,
     overflow: "hidden",
@@ -205,7 +205,7 @@ const useStyles = makeStyles((colors) => ({
   },
   premiumCard: {
     borderColor: colors.brand,
-    backgroundColor: "#FFFCF5",
+    backgroundColor: "#FBFCFF",
   },
   imageContainer: {
     height: 150,
@@ -368,8 +368,6 @@ const useStyles = makeStyles((colors) => ({
     height: 48,
     borderRadius: 14,
     gap: 7,
-    borderBottomWidth: 4,
-    borderBottomColor: "#15803D",
   },
   whatsappButtonText: {
     color: "#FFFFFF",
@@ -383,8 +381,6 @@ const useStyles = makeStyles((colors) => ({
     justifyContent: "center",
     height: 48,
     borderRadius: 14,
-    borderBottomWidth: 4,
-    borderBottomColor: colors.borderStrong,
   },
   viewDetailsText: {
     color: colors.onSurface,

@@ -403,7 +403,7 @@ const useStyles = makeStyles((colors) => ({
   kpiCard: {
     width: "48%",
     backgroundColor: colors.surfaceSecondary,
-    borderWidth: 2,
+    borderWidth: 1,
     borderColor: colors.border,
     borderRadius: 18,
     padding: 14,

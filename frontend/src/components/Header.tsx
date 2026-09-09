@@ -135,7 +135,7 @@ const useStyles = makeStyles((colors) => ({
     gap: 4,
     paddingHorizontal: 10,
     paddingVertical: 6,
-    borderRadius: 20,
+    borderRadius: 16,
     borderWidth: 1,
     borderColor: "rgba(0,0,0,0.06)",
   },
@@ -150,7 +150,7 @@ const useStyles = makeStyles((colors) => ({
     backgroundColor: colors.brandPrimary,
     paddingHorizontal: 12,
     paddingVertical: 6,
-    borderRadius: 20,
+    borderRadius: 16,
   },
   loginPillText: {
     color: "#FFFFFF",
