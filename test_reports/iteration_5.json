@@ -1,0 +1,26 @@
+{
+  "summary": "P0 bug fix VERIFIED. The Instagram icon crash on the store detail page is resolved. Tested /store/store_1, /store/store_2 (Urban Style Boutique, which has instagram in contact), and /store/store_3. All 3 stores load without any ErrorBoundary/'Something went wrong'/'Element type is invalid' error. All 3 tabs (Catálogo, Horários & Local, Avaliações) render correctly on every store. The 'Contatos & Redes' section on store_2's Info tab now renders the Instagram handle (@urbanstyle) using the AtSign icon without crashing. Regression tests passed: channel-whatsapp-btn, channel-phone-btn, channel-directions-btn are all visible and tappable; review submission flow (login as consumer -> reviews tab -> open modal -> select rating 4 -> type comment -> submit) works end-to-end and the new review appears in the list (review count went from 1 to 2, rating updated 4.8 -> 4.5).",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [],
+    "react_native_issues": [
+      {"component": "shadow* style props", "issue": "Console warning: '\"shadow*\" style props are deprecated. Use \"boxShadow\".' emitted repeatedly (logoBadge style uses shadowColor/shadowOffset/shadowOpacity/shadowRadius at /app/frontend/app/store/[id].tsx:721-725). Non-blocking but recommend migrating to boxShadow for RN Web compatibility."}
+    ]
+  },
+  "test_report_links": ["/app/test_reports/ui/store_1_info.jpeg", "/app/test_reports/ui/store_2_initial.jpeg", "/app/test_reports/ui/store_2_info_tab.jpeg", "/app/test_reports/ui/store_3_info.jpeg", "/app/test_reports/ui/after_review_submit.jpeg"],
+  "action_items": [
+    "(Optional / low priority) Replace deprecated shadow* style props on logoBadge (store/[id].tsx lines 721-725) with boxShadow to remove console warnings on RN Web."
+  ],
+  "critical_code_review_comments": [
+    "Fix implementation is clean: Instagram import removed and AtSign added (line 27); usage at line 516 uses <AtSign size={16} color=\"#E1306C\" /> which is valid. All testIDs preserved."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "N/A (frontend-only request)", "frontend": "100%"},
+  "seed_data_creation": "Submitted one TEST_ review on store_2 as user@cidadehub.com (rating 4, comment 'TEST_review automation - Excelente atendimento!'). Not cleaned up.",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Bug fix (Instagram -> AtSign in /app/frontend/app/store/[id].tsx) is fully verified across store_1, store_2 and store_3 on mobile viewport 390x844. Review submission regression also passes with the consumer demo user. Only leftover cosmetic concern is deprecated shadow* style props warning (non-blocking).",
+  "rca_of_issue": "Root cause: lucide-react-native no longer exports the 'Instagram' named icon in the installed version. Importing it resulted in `Instagram === undefined`, and rendering <Instagram/> inside the Contatos & Redes block on the Info tab triggered React's 'Element type is invalid: expected a string ... but got: undefined' which was caught by the top-level ErrorBoundary as 'Something went wrong' in StoreDetailScreen. Fix: replaced the import and JSX usage with the valid `AtSign` icon (kept same size and instagram color #E1306C). Reproduction is no longer possible on any of the three seeded stores."
+}

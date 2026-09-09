@@ -40,6 +40,9 @@ Aplicativo mobile SaaS para cadastrar lojas de uma cidade. O usuário final desc
 - Super admin: admin@cidadehub.com / admin123
 
 ## Backlog priorizado
+- P0 (próximo build escolhido pelo usuário): Lojista — horários de funcionamento reais (com aberto/fechado automático), ofertas/cupons do dia, e eventos da loja.
+- P1: Nível cidade — feed de Notícias e Agenda de Eventos, publicados pelo Super Admin.
+- P1: Cadastro/edição de loja pelo lojista com upload (feito) — evoluir para galeria de fotos.
 - P1: Cadastro/edição de loja pelo lojista com upload de logo/banner via Emergent Object Storage (hoje usa URLs/seed).
 - P1: Mapa embutido real na página da loja (hoje abre Google Maps externo).
 - P1: Pagamentos reais para planos/destaques/banners (Stripe/Razorpay) — somente sob solicitação e integração aprovada.

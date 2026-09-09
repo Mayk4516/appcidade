@@ -24,7 +24,7 @@ import {
   Phone,
   MapPin,
   Clock,
-  Instagram,
+  AtSign,
   Globe,
   Sparkles,
   ShoppingBag,
@@ -513,7 +513,7 @@ export default function StoreDetailScreen() {
               ) : null}
               {store.contact?.instagram ? (
                 <View style={styles.contactItemRow}>
-                  <Instagram size={16} color="#E1306C" />
+                  <AtSign size={16} color="#E1306C" />
                   <Text style={styles.contactItemText}>{store.contact.instagram}</Text>
                 </View>
               ) : null}
